@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="/css/style.css">
+		<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+		<script type="text/javascript" src="/js/jquery.js"></script>
+	 	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+	 	<script type="text/javascript" src="/js/script.js"></script>
+	 	<script type="text/javascript" src="./blog.js"></script>
+		<title>ACMS</title>
+	</head>
+	<body>
+		<nav class="navbar navbar-inverse">
+	  		<div class="container-fluid">
+		    	<div class="navbar-header">
+		      		<a class="navbar-brand" href="/index.html">ACMS</a>
+		    	</div>
+		    	<ul class="nav navbar-nav">
+		      		<li class="admin-session" style="display: none"><a href="/dashboard.html">Dashboard</a></li>
+		      		<li class="dropdown">
+			        	<a class="dropdown-toggle admin-session" style="display: none" data-toggle="dropdown" href="#">Plugins
+			        		<span class="caret"></span>
+			        	</a>
+			        	<ul class="dropdown-menu plugin-nav">
+			          		<li><a href="add-plugin.html">Add Plugin</a></li>
+			          		<li role="separator" class="divider"></li>
+			        	</ul>
+			      	</li>
+		      		<li class="session"><a href="/logout">Logout</a></li>
+		    	</ul>
+		  	</div>
+		</nav>
+		<div class="container">
+      		<div class="row">
+	        	<div class="col-lg-8 col-md-10 col-md-offset-2 mx-auto">
+	          		<div class="form-post">
+	            		<div class="form-group col-md-12">
+					    	<label>Title:</label>
+					    	<input type="text" class="form-control" id="add-post-title">
+					  	</div>
+					  	<div class="row">
+				  		</div>
+					  	<div class="form-group col-md-12">
+					    	<label>Content:</label>
+					    	<textarea class="form-control" rows="16" id="add-post-content"></textarea>
+					  	</div>
+	          		</div>
+	          		<button class="btn btn-primary" id="btn-confirm-add-post">Confirm Post</button>
+	        	</div>
+	      	</div>
+	    </div>
+		<script type="text/javascript">
+			$(document).ready(function() {
+			    checkSession();
+			    navPlugin();
+			});
+
+			$('#btn-confirm-add-post').click(function() {
+				addPost();
+			});
+		</script>
+	</body>
+</html>

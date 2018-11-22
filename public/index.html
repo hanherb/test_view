@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="/css/style.css">
+		<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+		<script type="text/javascript" src="/js/jquery.js"></script>
+	 	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+	 	<script type="text/javascript" src="/js/script.js"></script>
+		<title>ACMS</title>
+	</head>
+	<body>
+		<nav class="navbar navbar-inverse">
+	  		<div class="container-fluid">
+		    	<div class="navbar-header">
+		      		<a class="navbar-brand" href="/index.html">ACMS</a>
+		    	</div>
+		    	<ul class="nav navbar-nav">
+		      		
+		    	</ul>
+		  	</div>
+		</nav>
+		<div class="container">
+			<div class="row">
+				<!-- home content -->
+				<div class="col-md-10 col-md-offset-5">
+					<div class="home-content">
+						<h1>ACMS</h1>
+						<button class="btn btn-primary no-session" id="btn-login-page">Login</button>
+						<button class="btn btn-primary no-session" id="btn-register-page">Register</button>
+						<p class="session">Welcome, <span></span></p>
+					</div>
+				</div>
+				<!-- /home content -->
+			</div>
+		</div>
+		<script type="text/javascript">
+			$(document).ready(function() {
+			    checkSession();
+			    navPlugin();
+			});
+			$('#btn-login-page').click(function() {
+				window.location.replace("http://localhost:3001/login.html");
+			});
+			$('#btn-register-page').click(function() {
+				window.location.replace("http://localhost:3001/register.html");
+			});
+		</script>
+	</body>
+</html>
