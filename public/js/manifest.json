@@ -1,0 +1,16 @@
+{
+	"name": "ACMS",
+	"short_name": "ACMS",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"theme_color": "#9C27B0",
+	"background_color": "#EEE",
+	"icons": [
+		{
+			"src": "/img/icon.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		}
+	]
+}
