@@ -1,6 +1,6 @@
-if(navigator.serviceWorker) {
-  	navigator.serviceWorker.register('/sw.js');
-}
+// if(navigator.serviceWorker) {
+//   	navigator.serviceWorker.register('/sw.js');
+// }
 
 $(function(){
 	$(".nav").load("././navbar.html");
