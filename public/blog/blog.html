@@ -55,7 +55,7 @@
 			$(document).ready(function() {
 			    checkSession();
 			    navPlugin();
-			    listBlog();
+			    authCheck('plugin', listBlog());
 			});
 
 			$('#btn-confirm-delete').click(function() {

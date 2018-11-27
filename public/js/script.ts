@@ -6,6 +6,29 @@ $(function(){
 	$(".nav").load("././navbar.html");
 });
 
+function authCheck(type, callback) {
+	$.get('http://localhost:3001/check-session', {}, function(data){
+		if(type == 'user') {
+			if(data.authority.api.user == 1) {
+				return callback();
+			}
+			else {
+				alert("You don't have enough permission");
+				window.location.replace("http://localhost:3001/");
+			}
+		}
+		else if(type == 'plugin') {
+			if(data.authority.api.plugin == 1) {
+				return callback();
+			}
+			else {
+				alert("You don't have enough permission");
+				window.location.replace("http://localhost:3001/");
+			}
+		}
+	});
+}
+
 // menampilkan ke #tableUser di dashboard.html
 function getUser() {
 	let query = `query getAllUser {

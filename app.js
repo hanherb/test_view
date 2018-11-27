@@ -3,16 +3,21 @@ var app = express();
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 
-app.use(session({secret: 'kuda'}));
-
 app.use(cookieParser());
 
-app.use(express.static(__dirname + '/public',{ redirect : false }));
+app.use(session({
+  secret: 'kuda',
+  cookie: { secure: false }
+}))
 
 var server = app.listen(3001, function () {
 	var port = server.address().port;
 
   	console.log('App listening at port:', port);
+});
+
+app.get('/', function(req, res) {
+	res.redirect('/index.html');
 });
 
 app.get('/home', function(req, res) {
@@ -36,3 +41,5 @@ app.get('/check-session', function(req, res) {
 		res.json("no session");
 	}
 });
+
+app.use(express.static(__dirname + '/public',{ redirect : false }));

@@ -4,6 +4,28 @@
 $(function () {
     $(".nav").load("././navbar.html");
 });
+function authCheck(type, callback) {
+    $.get('http://localhost:3001/check-session', {}, function (data) {
+        if (type == 'user') {
+            if (data.authority.api.user == 1) {
+                return callback();
+            }
+            else {
+                alert("You don't have enough permission");
+                window.location.replace("http://localhost:3001/");
+            }
+        }
+        else if (type == 'plugin') {
+            if (data.authority.api.plugin == 1) {
+                return callback();
+            }
+            else {
+                alert("You don't have enough permission");
+                window.location.replace("http://localhost:3001/");
+            }
+        }
+    });
+}
 // menampilkan ke #tableUser di dashboard.html
 function getUser() {
     var query = "query getAllUser {\n\t\t\t\t  users {\n\t\t\t\t    fullname\n\t\t\t\t    email\n\t\t\t\t    role\n\t\t\t\t    authority {\n\t\t\t\t      user {\n\t\t\t\t        read\n\t\t\t\t        create\n\t\t\t\t        update\n\t\t\t\t        delete\n\t\t\t\t      }\n\t\t\t\t    \tapi {\n\t\t\t\t        user\n\t\t\t\t        plugin\n\t\t\t\t      }\n\t\t\t\t    }\n\t\t\t\t  }\n\t\t\t\t}";
