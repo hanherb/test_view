@@ -45,9 +45,9 @@ function addPost() {
     ];
     var month = monthNames[(currentdate.getMonth())];
     var year = currentdate.getFullYear();
-    $.get('http://localhost:3000/add-post', { title: title, content: content, date: date, month: month, year: year }, function (data) {
-        if (data.ok == 1) {
-            $.get('http://localhost:3001/check-session', {}, function (data2) {
+    $.get('http://localhost:3001/check-session', {}, function (data2) {
+        $.get('http://localhost:3000/add-post', { title: title, content: content, date: date, month: month, year: year, author: data2.fullname }, function (data) {
+            if (data.ok == 1) {
                 var author = data2.fullname;
                 var query = "mutation createSingleBlog($input:BlogInput) {\n\t\t\t\t  createBlog(input: $input) {\n\t\t\t\t    title\n\t\t\t\t  }\n\t\t\t\t}";
                 fetch('http://localhost:3000/graphql', {
@@ -74,11 +74,11 @@ function addPost() {
                 });
                 alert("Add Post Success");
                 window.location.replace("http://localhost:3001/blog/blog.html");
-            });
-        }
-        else {
-            alert("Add Post Error");
-        }
+            }
+            else {
+                alert("Add Post Error");
+            }
+        });
     });
 }
 //--

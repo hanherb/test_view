@@ -57,9 +57,9 @@ function addPost() {
 	let month = monthNames[(currentdate.getMonth())];
 	let year = currentdate.getFullYear();
 
-	$.get('http://localhost:3000/add-post', {title: title, content: content, date: date, month: month, year: year}, function(data) {
-		if(data.ok == 1) {
-			$.get('http://localhost:3001/check-session', {}, function(data2) {
+	$.get('http://localhost:3001/check-session', {}, function(data2) {	
+		$.get('http://localhost:3000/add-post', {title: title, content: content, date: date, month: month, year: year, author: data2.fullname}, function(data) {
+			if(data.ok == 1) {
 				let author = data2.fullname;
 				let query = `mutation createSingleBlog($input:BlogInput) {
 				  createBlog(input: $input) {
@@ -91,11 +91,11 @@ function addPost() {
 				});
 				alert("Add Post Success");
 				window.location.replace("http://localhost:3001/blog/blog.html");
-			});
-		}
-		else {
-			alert("Add Post Error");
-		}
+			}
+			else {
+				alert("Add Post Error");
+			}
+		});
 	});
 }
 //--
@@ -107,8 +107,8 @@ function formPost(name) {
 
 function formPostValue() {
 	let title = window.location.href.split("?title=")[1].replace(/%20/g, " ");
-	var blogTitle = title;
-	var query = `query getSingleBlog($blogTitle: String!) {
+	let blogTitle = title;
+	let query = `query getSingleBlog($blogTitle: String!) {
 	  blog(title: $blogTitle) {
 	    title
 	    content

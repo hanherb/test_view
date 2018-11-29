@@ -6,23 +6,31 @@ $(function () {
 });
 function authCheck(type, callback) {
     $.get('http://localhost:3001/check-session', {}, function (data) {
-        if (type == 'user') {
-            if (data.authority.api.user == 1) {
-                return callback();
+        if (data != 'no session') {
+            if (type == 'user') {
+                if (data.authority.api.user == 1) {
+                    if (callback)
+                        callback();
+                }
+                else {
+                    alert("You don't have enough permission");
+                    window.location.replace("http://localhost:3001/");
+                }
             }
-            else {
-                alert("You don't have enough permission");
-                window.location.replace("http://localhost:3001/");
+            else if (type == 'plugin') {
+                if (data.authority.api.plugin == 1) {
+                    if (callback)
+                        callback();
+                }
+                else {
+                    alert("You don't have enough permission");
+                    window.location.replace("http://localhost:3001/");
+                }
             }
         }
-        else if (type == 'plugin') {
-            if (data.authority.api.plugin == 1) {
-                return callback();
-            }
-            else {
-                alert("You don't have enough permission");
-                window.location.replace("http://localhost:3001/");
-            }
+        else {
+            alert("You have to login first");
+            window.location.replace("http://localhost:3001/");
         }
     });
 }
