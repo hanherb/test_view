@@ -30,6 +30,7 @@ app.get('/assign-session', function(req, res) {
 	req.session.fullname = req.query.data.fullname;
 	req.session.role = req.query.data.role;
 	req.session.authority = req.query.data.authority;
+	req.session.balance = req.query.data.balance;
 	res.json(1);
 });
 

@@ -107,13 +107,14 @@ function registerUser() {
 			"user": 0,
 			"plugin": 0
 		}
-	}
+	};
+	let balance = 0;
 
 	if(password != repassword) {
 		alert("Password doesn't match");
 	}
 	else {
-		$.get('http://localhost:3000/register-user', {email: email, fullname: fullname, password: password, role: role, authority: authority}, function(data) {
+		$.get('http://localhost:3000/register-user', {email: email, fullname: fullname, password: password, role: role, authority: authority, balance: balance}, function(data) {
 			if(data == 1) {
 				let query = `mutation createSingleUser($input:PersonInput) {
 				  	createUser(input: $input) {
@@ -180,19 +181,21 @@ function loginUser() {
 // cek apakah ada session yang aktif atau tidak
 function checkSession() {
 	$.get('http://localhost:3001/check-session', {}, function(data){
-		if(data.email) {
-			$('.no-session').hide();
-			$('.session').show();
-			$('.session span').html(data.fullname);
-
-			if(data.authority.user.read == 1) {
-				$('.admin-session').show();
+		setTimeout(function() {
+			if(data.email) {
+				$('.session').addClass("show");
+				$('.no-session').addClass("hide");
+				$('.session').removeClass("hide");
+				$('.no-session').removeClass("show");
+				$('.session #welcome').html(data.fullname);
 			}
-		}
-		else {
-			$('.no-session').show();
-			$('.session').hide();
-		}
+			else {
+				$('.session').addClass("hide");
+				$('.no-session').addClass("show");
+				$('.session').removeClass("show");
+				$('.no-session').removeClass("hide");
+			}
+		}, 50);
 	});
 }
 //--
@@ -568,11 +571,13 @@ function navPlugin() {
 	    	variables: {},
 	  	})
 	}).then(r => r.json()).then(function(data) {
-	  	for(let i = 0; i < data.data.plugins.length; i++) {
-			if(data.data.plugins[i].status == 1){
-				$('.plugin-nav').append('<li><a href="/'+data.data.plugins[i].name+'/'+data.data.plugins[i].name+'.html">'+data.data.plugins[i].name+'</a></li>');
+		setTimeout(function() {
+		  	for(let i = 0; i < data.data.plugins.length; i++) {
+				if(data.data.plugins[i].status == 1){
+					$('.plugin-nav').append('<li><a href="/'+data.data.plugins[i].name+'/'+data.data.plugins[i].name+'.html">'+data.data.plugins[i].name+'</a></li>');
+				}
 			}
-		}
+		}, 50);
 	});
 }
 //--
@@ -610,18 +615,20 @@ function getPlugin() {
 	    	variables: {},
 	  	})
 	}).then(r => r.json()).then(function(data) {
-	  	$('#plugin-list').find('.checkbox input').each(function(){
-	  		for(let i = 0; i < data.data.plugins.length; i++) {
-				if(data.data.plugins[i].name == this.id) {
-					if(data.data.plugins[i].status == 1) {
-						$(this).prop('checked', true);
-					}
-					else {
-						$(this).prop('checked', false);
+		setTimeout(function() {
+		  	$('#plugin-list').find('.checkbox input').each(function(){
+		  		for(let i = 0; i < data.data.plugins.length; i++) {
+					if(data.data.plugins[i].name == this.id) {
+						if(data.data.plugins[i].status == 1) {
+							$(this).prop('checked', true);
+						}
+						else {
+							$(this).prop('checked', false);
+						}
 					}
 				}
-			}
-		});
+			});
+		}, 50);
 	});
 }
 //--

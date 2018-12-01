@@ -22,7 +22,7 @@ function listCommerce() {
                 '<li class="list-inline-item"><span class="price">Rp ' + data.data.commerces[i].price + '</span></li>' +
                 '</ul>' +
                 '<div class="btn-group">' +
-                '<button class="btn btn-success">Buy</button>' +
+                '<button class="btn btn-success" name="' + data.data.commerces[i].name + '" onclick="checkBuyItem(this.name);">Buy</button>' +
                 '<button class="btn btn-primary" name="' + data.data.commerces[i].name + '" onclick="formItem(this.name);">Edit</button>' +
                 '<button class="btn btn-danger" name="' + data.data.commerces[i].name + '" onclick="checkDeleteItem(this.name);">Delete</button>' +
                 '</div>' +
@@ -30,6 +30,20 @@ function listCommerce() {
                 '</div>' +
                 '</div>');
         }
+    });
+}
+//--
+//menampilkan saldo user
+function showBalance() {
+    $.get('http://localhost:3001/check-session', {}, function (data) {
+        setTimeout(function () {
+            if (data.email) {
+                $('#balance').html(data.balance);
+            }
+            else {
+                $('#balance').html("N/A");
+            }
+        }, 50);
     });
 }
 //--
@@ -111,7 +125,7 @@ function updateItem() {
     var qty = Number($('#update-item-qty').val());
     var description = $('#update-item-description').val();
     var image = $('#update-item-image').val();
-    $.get('http://localhost:3000/update-item', { old: oldName, name: name, price: price, qty: qty, description: description }, function (data) {
+    $.get('http://localhost:3000/update-item', { old: oldName, name: name, price: price, qty: qty, description: description, image: image }, function (data) {
         if (data.ok == 1) {
             var itemName = oldName;
             var query = "mutation updateSingleItem($itemName:String!, $input:CommerceInput) {\n\t\t\t  \tupdateCommerce(name: $itemName, input: $input) {\n\t\t\t    \tname\n\t\t  \t\t}\n\t\t\t}";
@@ -178,6 +192,101 @@ function deleteItem() {
         else {
             alert("Delete Item Error");
         }
+    });
+}
+//--
+//melakukan pembelian item
+function checkBuyItem(name) {
+    $('#modalBuyItem').modal('toggle');
+    $('#buy-check').html(name);
+}
+function buyItem() {
+    var itemName = $('#buy-check').html();
+    var query = "query getSingleItem($itemName: String!) {\n\t  commerce(name: $itemName) {\n\t    name\n\t    price\n\t    qty\n\t    description\n\t    image\n\t  }\n\t}";
+    fetch('http://localhost:3000/graphql', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            query: query,
+            variables: { itemName: itemName }
+        })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+        var name = data.data.commerce.name;
+        var price = data.data.commerce.price;
+        var qty = data.data.commerce.qty - 1;
+        var description = data.data.commerce.description;
+        var image = data.data.commerce.image;
+        $.get('http://localhost:3001/check-session', {}, function (data) {
+            if (data.balance - price < 0) {
+                alert("You don't have enough balance");
+                window.location.replace("http://localhost:3001/commerce/commerce.html");
+            }
+            else {
+                var email_1 = data.email;
+                var balance_1 = data.balance - price;
+                data.balance = balance_1;
+                $.get('http://localhost:3001/assign-session', { data: data }, function (data) {
+                    setTimeout(function () {
+                        $.get('http://localhost:3000/buy-item', { name: name, qty: qty, email: email_1, balance: balance_1 }, function (data) {
+                            if (data.ok == 1) {
+                                var query_1 = "mutation updateSingleItem($itemName:String!, $input:CommerceInput) {\n\t\t\t\t\t\t\t\t  \tupdateCommerce(name: $itemName, input: $input) {\n\t\t\t\t\t\t\t\t    \tname\n\t\t\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\tmutation updateSingleUser($userEmail:String!, $input:PersonInput) {\n\t\t\t\t\t\t\t\t  \tupdateUser(email: $userEmail, input: $input) {\n\t\t\t\t\t\t\t\t    \tfullname\n\t\t\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t\t\t}";
+                                fetch('http://localhost:3000/graphql', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Accept': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        query: query_1,
+                                        variables: {
+                                            itemName: itemName,
+                                            input: {
+                                                name: name,
+                                                price: price,
+                                                qty: qty,
+                                                description: description,
+                                                image: image
+                                            }
+                                        },
+                                        operationName: "updateSingleItem"
+                                    })
+                                }).then(function (r) { return r.json(); }).then(function (data) {
+                                    console.log(data);
+                                });
+                                var userEmail = email_1;
+                                fetch('http://localhost:3000/graphql', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Accept': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        query: query_1,
+                                        variables: {
+                                            userEmail: userEmail,
+                                            input: {
+                                                balance: balance_1
+                                            }
+                                        },
+                                        operationName: "updateSingleUser"
+                                    })
+                                }).then(function (r) { return r.json(); }).then(function (data) {
+                                    console.log(data);
+                                });
+                                alert("Buy Item Success");
+                                window.location.replace("http://localhost:3001/commerce/commerce.html");
+                            }
+                            else {
+                                alert("Buy Item Error");
+                            }
+                        });
+                    }, 50);
+                });
+            }
+        });
     });
 }
 //--

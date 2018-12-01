@@ -32,7 +32,7 @@ function listCommerce() {
 			                '<li class="list-inline-item"><span class="price">Rp '+data.data.commerces[i].price+'</span></li>'+
               			'</ul>'+
               			'<div class="btn-group">'+
-              				'<button class="btn btn-success">Buy</button>'+
+              				'<button class="btn btn-success" name="'+data.data.commerces[i].name+'" onclick="checkBuyItem(this.name);">Buy</button>'+
 			                '<button class="btn btn-primary" name="'+data.data.commerces[i].name+'" onclick="formItem(this.name);">Edit</button>'+
 			                '<button class="btn btn-danger" name="'+data.data.commerces[i].name+'" onclick="checkDeleteItem(this.name);">Delete</button>'+
               			'</div>'+
@@ -44,6 +44,20 @@ function listCommerce() {
 }
 //--
 
+//menampilkan saldo user
+function showBalance() {
+	$.get('http://localhost:3001/check-session', {}, function(data){
+		setTimeout(function() {
+			if(data.email) {
+				$('#balance').html(data.balance);
+			}
+			else {
+				$('#balance').html("N/A");
+			}
+		}, 50);
+	});
+}
+//--
 
 //menambah item untuk plugin e-commerce
 function addItem() {
@@ -142,7 +156,7 @@ function updateItem() {
 	let description = $('#update-item-description').val() as string;
 	let image = $('#update-item-image').val() as string;
 
-	$.get('http://localhost:3000/update-item', {old: oldName, name: name, price: price, qty: qty, description: description}, function(data) {
+	$.get('http://localhost:3000/update-item', {old: oldName, name: name, price: price, qty: qty, description: description, image: image}, function(data) {
 		if(data.ok == 1) {
 			let itemName = oldName;
 			let query = `mutation updateSingleItem($itemName:String!, $input:CommerceInput) {
@@ -222,6 +236,123 @@ function deleteItem() {
 		else {
 			alert("Delete Item Error");
 		}
+	});
+}
+//--
+
+//melakukan pembelian item
+function checkBuyItem(name) {
+	$('#modalBuyItem').modal('toggle');
+	$('#buy-check').html(name);
+}
+
+function buyItem() {
+	let itemName = $('#buy-check').html() as string;
+	let query = `query getSingleItem($itemName: String!) {
+	  commerce(name: $itemName) {
+	    name
+	    price
+	    qty
+	    description
+	    image
+	  }
+	}`;
+
+	fetch('http://localhost:3000/graphql', {
+  		method: 'POST',
+	  	headers: {
+	    	'Content-Type': 'application/json',
+	    	'Accept': 'application/json',
+	  	},
+	  	body: JSON.stringify({
+	    	query,
+	    	variables: {itemName},
+	  	})
+	}).then(r => r.json()).then(function(data) {
+		let name = data.data.commerce.name;
+		let price = data.data.commerce.price;
+		let qty = data.data.commerce.qty-1;
+		let description = data.data.commerce.description;
+		let image = data.data.commerce.image;
+		$.get('http://localhost:3001/check-session', {}, function(data){
+			if(data.balance-price < 0) {
+				alert("You don't have enough balance");
+				window.location.replace("http://localhost:3001/commerce/commerce.html");
+			}
+			else {
+				let email = data.email;
+				let balance = data.balance-price;
+				data.balance = balance;
+				$.get('http://localhost:3001/assign-session', {data: data}, function(data) {
+					setTimeout(function() {
+						$.get('http://localhost:3000/buy-item', {name: name, qty: qty, email: email, balance: balance}, function(data) {
+							if(data.ok == 1) {
+								let query = `mutation updateSingleItem($itemName:String!, $input:CommerceInput) {
+								  	updateCommerce(name: $itemName, input: $input) {
+								    	name
+							  		}
+								}
+								mutation updateSingleUser($userEmail:String!, $input:PersonInput) {
+								  	updateUser(email: $userEmail, input: $input) {
+								    	fullname
+							  		}
+								}`;
+
+								fetch('http://localhost:3000/graphql', {
+							  		method: 'POST',
+								  	headers: {
+								    	'Content-Type': 'application/json',
+								    	'Accept': 'application/json',
+								  	},
+								  	body: JSON.stringify({
+					    				query,
+								    	variables: {
+								    		itemName,
+								      		input: {
+								        		name,
+								        		price,
+								        		qty,
+								        		description,
+								        		image
+								      		}
+								    	},
+								    	operationName: "updateSingleItem"
+								  	})
+								}).then(r => r.json()).then(function(data) {
+									console.log(data);
+								});
+								let userEmail = email;
+
+								fetch('http://localhost:3000/graphql', {
+							  		method: 'POST',
+								  	headers: {
+								    	'Content-Type': 'application/json',
+								    	'Accept': 'application/json',
+								  	},
+								  	body: JSON.stringify({
+					    				query,
+								    	variables: {
+								    		userEmail,
+								      		input: {
+								        		balance
+								      		}
+								    	},
+								    	operationName: "updateSingleUser"
+								  	})
+								}).then(r => r.json()).then(function(data) {
+									console.log(data);
+								});
+								alert("Buy Item Success");
+								window.location.replace("http://localhost:3001/commerce/commerce.html");
+							}
+							else {
+								alert("Buy Item Error");
+							}
+						});
+					}, 50);
+				});
+			}
+		});
 	});
 }
 //--
