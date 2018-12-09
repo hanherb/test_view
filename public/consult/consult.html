@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="/css/style.css">
+		<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+		<script type="text/javascript" src="/js/jquery.js"></script>
+	 	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+	 	<script type="text/javascript" src="/js/script.js"></script>
+	 	<script type="text/javascript" src="./consult.js"></script>
+		<title>ACMS</title>
+	</head>
+	<body>
+		<nav class="navbar navbar-inverse">
+	  		<div class="container-fluid">
+		    	<div class="navbar-header">
+		      		<a class="navbar-brand" href="/index.html">ACMS</a>
+		    	</div>
+		    	<ul class="nav navbar-nav">
+		      		
+		    	</ul>
+		  	</div>
+		</nav>
+		<div class="container">
+      		<div class="row">
+	        	<div class="col-md-10 col-md-offset-1" id="doctor-list">
+					<table class="table table-hover" id="tableDoctor">
+			    		<thead>
+			      			<tr>
+			        			<th>No.</th>
+			        			<th>Full Name</th>
+			        			<th>Role</th>
+			        			<th>Action</th>
+			      			</tr>
+			    		</thead>
+			    		<tbody class="table-body">
+			    		</tbody>
+			  		</table>
+				</div>
+	      	</div>
+	    </div>
+	  	<div class="modal fade" id="modalConsult" role="dialog">
+    		<div class="modal-dialog">
+		    
+      			<!-- Modal content-->
+	      		<div class="modal-content">
+		        	<div class="modal-header">
+		          		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		          		<h4 class="modal-title">Consult Doctor</h4>
+		        	</div>
+		        	<div class="modal-body">
+	          			<div class="col-md-offset-3 container-fluid">
+	          				<p>Doctor name: <span id="consult-check"></span></p>
+	          				<p>Consult with this doctor?</p>
+	          				<button class="btn btn-success" id="btn-confirm-consult">Consult</button>
+	          			</div>
+					</div>
+				</div>
+      		</div>
+	  	</div>
+		<script type="text/javascript">
+			$(document).ready(function() {
+			    checkSession();
+			    navPlugin();
+			   	listDoctor();
+			});
+
+			$('#btn-confirm-consult').click(function() {
+				consultDoctor();
+			});
+		</script>
+	</body>
+</html>

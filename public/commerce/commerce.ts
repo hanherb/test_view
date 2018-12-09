@@ -44,21 +44,6 @@ function listCommerce() {
 }
 //--
 
-//menampilkan saldo user
-function showBalance() {
-	$.get('http://localhost:3001/check-session', {}, function(data){
-		setTimeout(function() {
-			if(data.email) {
-				$('#balance').html(data.balance);
-			}
-			else {
-				$('#balance').html("N/A");
-			}
-		}, 50);
-	});
-}
-//--
-
 //menambah item untuk plugin e-commerce
 function addItem() {
 	let name = $('#add-item-name').val() as string;
@@ -275,83 +260,48 @@ function buyItem() {
 		let description = data.data.commerce.description;
 		let image = data.data.commerce.image;
 		$.get('http://localhost:3001/check-session', {}, function(data){
-			if(data.balance-price < 0) {
-				alert("You don't have enough balance");
-				window.location.replace("http://localhost:3001/commerce/commerce.html");
-			}
-			else {
-				let email = data.email;
-				let balance = data.balance-price;
-				data.balance = balance;
-				$.get('http://localhost:3001/assign-session', {data: data}, function(data) {
-					setTimeout(function() {
-						$.get('http://localhost:3000/buy-item', {name: name, qty: qty, email: email, balance: balance}, function(data) {
-							if(data.ok == 1) {
-								let query = `mutation updateSingleItem($itemName:String!, $input:CommerceInput) {
-								  	updateCommerce(name: $itemName, input: $input) {
-								    	name
-							  		}
-								}
-								mutation updateSingleUser($userEmail:String!, $input:PersonInput) {
-								  	updateUser(email: $userEmail, input: $input) {
-								    	fullname
-							  		}
-								}`;
+			let email = data.email;
+			$.get('http://localhost:3001/assign-session', {data: data}, function(data) {
+				setTimeout(function() {
+					$.get('http://localhost:3000/buy-item', {name: name, qty: qty, email: email}, function(data) {
+						if(data.ok == 1) {
+							let query = `mutation updateSingleItem($itemName:String!, $input:CommerceInput) {
+							  	updateCommerce(name: $itemName, input: $input) {
+							    	name
+						  		}
+							}`;
 
-								fetch('http://localhost:3000/graphql', {
-							  		method: 'POST',
-								  	headers: {
-								    	'Content-Type': 'application/json',
-								    	'Accept': 'application/json',
-								  	},
-								  	body: JSON.stringify({
-					    				query,
-								    	variables: {
-								    		itemName,
-								      		input: {
-								        		name,
-								        		price,
-								        		qty,
-								        		description,
-								        		image
-								      		}
-								    	},
-								    	operationName: "updateSingleItem"
-								  	})
-								}).then(r => r.json()).then(function(data) {
-									console.log(data);
-								});
-								let userEmail = email;
-
-								fetch('http://localhost:3000/graphql', {
-							  		method: 'POST',
-								  	headers: {
-								    	'Content-Type': 'application/json',
-								    	'Accept': 'application/json',
-								  	},
-								  	body: JSON.stringify({
-					    				query,
-								    	variables: {
-								    		userEmail,
-								      		input: {
-								        		balance
-								      		}
-								    	},
-								    	operationName: "updateSingleUser"
-								  	})
-								}).then(r => r.json()).then(function(data) {
-									console.log(data);
-								});
-								alert("Buy Item Success");
-								window.location.replace("http://localhost:3001/commerce/commerce.html");
-							}
-							else {
-								alert("Buy Item Error");
-							}
-						});
-					}, 50);
-				});
-			}
+							fetch('http://localhost:3000/graphql', {
+						  		method: 'POST',
+							  	headers: {
+							    	'Content-Type': 'application/json',
+							    	'Accept': 'application/json',
+							  	},
+							  	body: JSON.stringify({
+				    				query,
+							    	variables: {
+							    		itemName,
+							      		input: {
+							        		name,
+							        		price,
+							        		qty,
+							        		description,
+							        		image
+							      		}
+							    	}
+							  	})
+							}).then(r => r.json()).then(function(data) {
+								console.log(data);
+							});
+							alert("Buy Item Success");
+							window.location.replace("http://localhost:3001/commerce/commerce.html");
+						}
+						else {
+							alert("Buy Item Error");
+						}
+					});
+				}, 50);
+			});
 		});
 	});
 }

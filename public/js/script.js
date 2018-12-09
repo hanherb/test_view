@@ -83,12 +83,11 @@ function registerUser() {
             "plugin": 0
         }
     };
-    var balance = 0;
     if (password != repassword) {
         alert("Password doesn't match");
     }
     else {
-        $.get('http://localhost:3000/register-user', { email: email, fullname: fullname, password: password, role: role, authority: authority, balance: balance }, function (data) {
+        $.get('http://localhost:3000/register-user', { email: email, fullname: fullname, password: password, role: role, authority: authority }, function (data) {
             if (data == 1) {
                 var query = "mutation createSingleUser($input:PersonInput) {\n\t\t\t\t  \tcreateUser(input: $input) {\n\t\t\t\t    \tfullname\n\t\t\t  \t\t}\n\t\t\t\t}";
                 fetch('http://localhost:3000/graphql', {
@@ -467,10 +466,28 @@ function navPlugin() {
         })
     }).then(function (r) { return r.json(); }).then(function (data) {
         setTimeout(function () {
-            for (var i = 0; i < data.data.plugins.length; i++) {
+            var _loop_1 = function (i) {
                 if (data.data.plugins[i].status == 1) {
-                    $('.plugin-nav').append('<li><a href="/' + data.data.plugins[i].name + '/' + data.data.plugins[i].name + '.html">' + data.data.plugins[i].name + '</a></li>');
+                    if (data.data.plugins[i].name == 'consult') {
+                        $.get('http://localhost:3001/check-session', {}, function (data2) {
+                            if (data2.role == 'user') {
+                                $('.plugin-nav').append('<li><a href="/' + data.data.plugins[i].name + '/' + data.data.plugins[i].name + '.html">' + data.data.plugins[i].name + '</a></li>');
+                            }
+                            else if (data2.role == 'doctor') {
+                                $('.plugin-nav').append('<li><a href="/' + data.data.plugins[i].name + '/list-' + data.data.plugins[i].name + '.html">' + data.data.plugins[i].name + '</a></li>');
+                            }
+                            else {
+                                $('.plugin-nav').append('<li><a href="/' + data.data.plugins[i].name + '/admin-' + data.data.plugins[i].name + '.html">' + data.data.plugins[i].name + '</a></li>');
+                            }
+                        });
+                    }
+                    else {
+                        $('.plugin-nav').append('<li><a href="/' + data.data.plugins[i].name + '/' + data.data.plugins[i].name + '.html">' + data.data.plugins[i].name + '</a></li>');
+                    }
                 }
+            };
+            for (var i = 0; i < data.data.plugins.length; i++) {
+                _loop_1(i);
             }
         }, 50);
     });
@@ -536,38 +553,57 @@ function addPlugin() {
         }
     });
     $.get('http://localhost:3000/add-plugin', { plugin: plugin }, function (data) {
-        if (data == 1) {
-            for (var i = 0; i < plugin.name.length; i++) {
-                var name_1 = plugin.name[i];
-                var status_1 = plugin.status[i];
-                var pluginName = name_1;
-                var query = "mutation updateSinglePlugin($pluginName:String!, $input:PluginInput) {\n\t\t\t\t  \tupdatePlugin(name: $pluginName, input: $input) {\n\t\t\t\t    \tname\n\t\t\t  \t\t}\n\t\t\t\t}";
-                fetch('http://localhost:3000/graphql', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        query: query,
-                        variables: {
-                            pluginName: pluginName,
-                            input: {
-                                name: name_1,
-                                status: status_1
-                            }
+        console.log(data);
+        for (var i = 0; i < plugin.name.length; i++) {
+            var name_1 = plugin.name[i];
+            var status_1 = plugin.status[i];
+            var pluginName = name_1;
+            var query = "mutation updateSinglePlugin($pluginName:String!, $input:PluginInput) {\n\t\t\t  \tupdatePlugin(name: $pluginName, input: $input) {\n\t\t\t    \tname\n\t\t  \t\t}\n\t\t\t}";
+            fetch('http://localhost:3000/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    query: query,
+                    variables: {
+                        pluginName: pluginName,
+                        input: {
+                            name: name_1,
+                            status: status_1
                         }
-                    })
-                }).then(function (r) { return r.json(); }).then(function (data) {
-                    console.log(data);
-                });
-            }
-            alert("Plugin Updated");
-            window.location.replace("http://localhost:3001/add-plugin.html");
+                    }
+                })
+            }).then(function (r) { return r.json(); }).then(function (data) {
+                console.log(data);
+            });
         }
-        else {
-            alert("Something went wrong");
+        if (data != 1) {
+            var name_2 = data.name;
+            var status_2 = Number(data.status);
+            var query = "mutation createSinglePlugin($input:PluginInput) {\n\t\t\t  \tcreatePlugin(input: $input) {\n\t\t\t    \tname\n\t\t  \t\t}\n\t\t\t}";
+            fetch('http://localhost:3000/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    query: query,
+                    variables: {
+                        input: {
+                            name: name_2,
+                            status: status_2
+                        }
+                    }
+                })
+            }).then(function (r) { return r.json(); }).then(function (data) {
+                console.log(data);
+            });
         }
+        alert("Plugin Updated");
+        window.location.replace("http://localhost:3001/add-plugin.html");
     });
 }
 //--
