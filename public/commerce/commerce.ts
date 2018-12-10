@@ -260,48 +260,133 @@ function buyItem() {
 		let description = data.data.commerce.description;
 		let image = data.data.commerce.image;
 		$.get('http://localhost:3001/check-session', {}, function(data){
-			let email = data.email;
-			$.get('http://localhost:3001/assign-session', {data: data}, function(data) {
-				setTimeout(function() {
-					$.get('http://localhost:3000/buy-item', {name: name, qty: qty, email: email}, function(data) {
-						if(data.ok == 1) {
-							let query = `mutation updateSingleItem($itemName:String!, $input:CommerceInput) {
-							  	updateCommerce(name: $itemName, input: $input) {
-							    	name
-						  		}
-							}`;
+			let patient_name = data.fullname;
+			let patientName = patient_name;
+			setTimeout(function() {
+				$.get('http://localhost:3000/buy-item', {name: name, qty: qty}, function(data) {
+					if(data.ok == 1) {
+						let query = `mutation updateSingleItem($itemName:String!, $input:CommerceInput) {
+						  	updateCommerce(name: $itemName, input: $input) {
+						    	name
+					  		}
+						}
 
-							fetch('http://localhost:3000/graphql', {
-						  		method: 'POST',
-							  	headers: {
-							    	'Content-Type': 'application/json',
-							    	'Accept': 'application/json',
-							  	},
-							  	body: JSON.stringify({
-				    				query,
-							    	variables: {
-							    		itemName,
-							      		input: {
-							        		name,
-							        		price,
-							        		qty,
-							        		description,
-							        		image
-							      		}
-							    	}
-							  	})
-							}).then(r => r.json()).then(function(data) {
-								console.log(data);
-							});
-							alert("Buy Item Success");
-							window.location.replace("http://localhost:3001/commerce/commerce.html");
-						}
-						else {
-							alert("Buy Item Error");
-						}
-					});
-				}, 50);
-			});
+						query getSingleConsult($patientName: String!) {
+					  		consult(patient_name: $patientName) {
+								doctor_name
+						    	patient_name
+						    	fulldate
+						    	medicine
+						  	}
+						}`;
+
+						fetch('http://localhost:3000/graphql', {
+					  		method: 'POST',
+						  	headers: {
+						    	'Content-Type': 'application/json',
+						    	'Accept': 'application/json',
+						  	},
+						  	body: JSON.stringify({
+			    				query,
+						    	variables: {
+						    		itemName,
+						      		input: {
+						        		name,
+						        		price,
+						        		qty,
+						        		description,
+						        		image
+						      		}
+						    	},
+						    	operationName: 'updateSingleItem'
+						  	})
+						}).then(r => r.json()).then(function(data) {
+							console.log(data);
+						});
+
+						fetch('http://localhost:3000/graphql', {
+					  		method: 'POST',
+						  	headers: {
+						    	'Content-Type': 'application/json',
+						    	'Accept': 'application/json',
+						  	},
+						  	body: JSON.stringify({
+						    	query,
+						    	variables: {
+						    		patientName
+						    	},
+						    	operationName: 'getSingleConsult'
+						  	})
+						}).then(r => r.json()).then(function(data) {
+							console.log(data);
+							let medicine = name;
+							if(data.data.consult == null) {
+								$.get('http://localhost:3000/add-consult', {patient_name: patient_name, medicine: name}, function(data) {
+									let query = `mutation createConsult($input:ConsultInput) {
+									  	createConsult(input: $input) {
+									    	patient_name
+								  		}
+									}`;
+
+									fetch('http://localhost:3000/graphql', {
+								  		method: 'POST',
+									  	headers: {
+									    	'Content-Type': 'application/json',
+									    	'Accept': 'application/json',
+									  	},
+									  	body: JSON.stringify({
+											query,
+									    	variables: {
+									      		input: {
+									      			patient_name,
+									        		medicine
+									      		}
+									    	}
+									  	})
+									}).then(r => r.json()).then(function(data) {
+										console.log(data);
+									});
+									// window.location.replace("http://localhost:3001/consult/consult.html");
+								});
+							}
+							else {
+								$.get('http://localhost:3000/update-consult', {patient_name: patient_name, doctor_name: data.data.consult.doctor_name, fulldate: data.data.consult.fulldate, medicine: name}, function(data) {
+									let query = `mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {
+									  	updateConsult(patient_name: $patientName, input: $input) {
+									    	patient_name
+								  		}
+									}`;
+
+									fetch('http://localhost:3000/graphql', {
+								  		method: 'POST',
+									  	headers: {
+									    	'Content-Type': 'application/json',
+									    	'Accept': 'application/json',
+									  	},
+									  	body: JSON.stringify({
+						    				query,
+									    	variables: {
+									    		patientName,
+									      		input: {
+									      			patient_name,
+									        		medicine
+									      		}
+									    	}
+									  	})
+									}).then(r => r.json()).then(function(data) {
+										console.log(data);
+									});
+								});
+							}
+						});
+						alert("Buy Item Success");
+						// window.location.replace("http://localhost:3001/commerce/commerce.html");
+					}
+					else {
+						alert("Buy Item Error");
+					}
+				});
+			}, 50);
 		});
 	});
 }

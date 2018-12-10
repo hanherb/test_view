@@ -184,40 +184,93 @@ function consultDoctor() {
 		let hour = currentdate.getHours();
 
 		let fulldate = date + " " + month + " " + year + " @ " + hour + ":" + minute + ":" + second;
+		
+		let patientName = patient_name;
+		let query = `query getSingleConsult($patientName: String!) {
+	  		consult(patient_name: $patientName) {
+				doctor_name
+		    	patient_name
+		    	fulldate
+		    	medicine
+		  	}
+		}`;
 
-		$.get('http://localhost:3000/add-consult', {doctor_name: doctor_name, patient_name: patient_name, fulldate: fulldate}, function(data) {
-			if(data.ok == 1) {
+		fetch('http://localhost:3000/graphql', {
+	  		method: 'POST',
+		  	headers: {
+		    	'Content-Type': 'application/json',
+		    	'Accept': 'application/json',
+		  	},
+		  	body: JSON.stringify({
+		    	query,
+		    	variables: {
+		    		patientName
+		    	},
+		    	operationName: 'getSingleConsult'
+		  	})
+		}).then(r => r.json()).then(function(data) {
+			if(data.data.consult == null) {
+				$.get('http://localhost:3000/add-consult', {patient_name: patient_name, doctor_name: doctor_name, fulldate: fulldate}, function(data) {
+					let query = `mutation createConsult($input:ConsultInput) {
+					  	createConsult(input: $input) {
+					    	patient_name
+				  		}
+					}`;
 
-				let query = `mutation createSingleConsult($input:ConsultInput) {
-				  createConsult(input: $input) {
-				    doctor_name
-				  }
-				}`;
-
-				fetch('http://localhost:3000/graphql', {
-			  		method: 'POST',
-				  	headers: {
-				    	'Content-Type': 'application/json',
-				    	'Accept': 'application/json',
-				  	},
-				  	body: JSON.stringify({
-	    				query,
-				    	variables: {
-				      		input: {
-				        		doctor_name,
-				        		patient_name,
-				        		fulldate
-				      		}
-				    	}
-				  	})
-				}).then(r => r.json()).then(function(data) {
-					console.log(data);
+					fetch('http://localhost:3000/graphql', {
+				  		method: 'POST',
+					  	headers: {
+					    	'Content-Type': 'application/json',
+					    	'Accept': 'application/json',
+					  	},
+					  	body: JSON.stringify({
+							query,
+					    	variables: {
+					      		input: {
+					      			patient_name,
+					        		doctor_name,
+					        		fulldate
+					      		}
+					    	}
+					  	})
+					}).then(r => r.json()).then(function(data) {
+						console.log(data);
+					});
+					alert("Add Consult Success");
+					window.location.replace("http://localhost:3001/consult/consult.html");
 				});
-				alert("Add Consult Success");
-				window.location.replace("http://localhost:3001/consult/consult.html");
 			}
 			else {
-				alert("Add Consult Error");
+				$.get('http://localhost:3000/update-consult', {patient_name: patient_name, doctor_name: doctor_name, fulldate: fulldate, medicine: data.data.consult.medicine}, function(data) {
+					let query = `mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {
+					  	updateConsult(patient_name: $patientName, input: $input) {
+					    	patient_name
+				  		}
+					}`;
+
+					fetch('http://localhost:3000/graphql', {
+				  		method: 'POST',
+					  	headers: {
+					    	'Content-Type': 'application/json',
+					    	'Accept': 'application/json',
+					  	},
+					  	body: JSON.stringify({
+							query,
+					    	variables: {
+					    		patientName,
+					      		input: {
+					      			patient_name,
+					        		doctor_name,
+					        		fulldate
+					      		}
+					    	}
+					  	})
+					}).then(r => r.json()).then(function(data) {
+						console.log(data);
+					});
+					alert("Update Consult Success");
+					window.location.replace("http://localhost:3001/consult/consult.html");
+				});
 			}
 		});
 	});
