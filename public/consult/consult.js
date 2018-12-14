@@ -131,7 +131,7 @@ function consultDoctor() {
         var hour = currentdate.getHours();
         var fulldate = date + " " + month + " " + year + " @ " + hour + ":" + minute + ":" + second;
         var patientName = patient_name;
-        var query = "query getSingleConsult($patientName: String!) {\n\t  \t\tconsult(patient_name: $patientName) {\n\t\t\t\tdoctor_name\n\t\t    \tpatient_name\n\t\t    \tfulldate\n\t\t    \tmedicine\n\t\t  \t}\n\t\t}";
+        var query = "query getSingleConsult($patientName: String!) {\n\t  \t\tconsult(patient_name: $patientName) {\n\t\t\t\tdoctor_name\n\t\t    \tpatient_name\n\t\t    \tfulldate\n\t\t    \tmedicine\n\t\t    \tstatus\n\t\t  \t}\n\t\t}";
         fetch('http://localhost:3000/graphql', {
             method: 'POST',
             headers: {
@@ -147,7 +147,8 @@ function consultDoctor() {
             })
         }).then(function (r) { return r.json(); }).then(function (data) {
             if (data.data.consult == null) {
-                $.get('http://localhost:3000/add-consult', { patient_name: patient_name, doctor_name: doctor_name, fulldate: fulldate }, function (data) {
+                var status_1 = "pending";
+                $.get('http://localhost:3000/add-consult', { patient_name: patient_name, doctor_name: doctor_name, fulldate: fulldate, status: status_1 }, function (data) {
                     var query = "mutation createConsult($input:ConsultInput) {\n\t\t\t\t\t  \tcreateConsult(input: $input) {\n\t\t\t\t\t    \tpatient_name\n\t\t\t\t  \t\t}\n\t\t\t\t\t}";
                     fetch('http://localhost:3000/graphql', {
                         method: 'POST',
@@ -161,7 +162,8 @@ function consultDoctor() {
                                 input: {
                                     patient_name: patient_name,
                                     doctor_name: doctor_name,
-                                    fulldate: fulldate
+                                    fulldate: fulldate,
+                                    status: status_1
                                 }
                             }
                         })
@@ -173,7 +175,9 @@ function consultDoctor() {
                 });
             }
             else {
-                $.get('http://localhost:3000/update-consult', { patient_name: patient_name, doctor_name: doctor_name, fulldate: fulldate, medicine: data.data.consult.medicine }, function (data) {
+                var medicine_1 = data.data.consult.medicine;
+                var status_2 = data.data.consult.status;
+                $.get('http://localhost:3000/update-consult', { patient_name: patient_name, doctor_name: doctor_name, fulldate: fulldate, medicine: medicine_1, status: status_2 }, function (data) {
                     var query = "mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {\n\t\t\t\t\t  \tupdateConsult(patient_name: $patientName, input: $input) {\n\t\t\t\t\t    \tpatient_name\n\t\t\t\t  \t\t}\n\t\t\t\t\t}";
                     fetch('http://localhost:3000/graphql', {
                         method: 'POST',
@@ -188,7 +192,9 @@ function consultDoctor() {
                                 input: {
                                     patient_name: patient_name,
                                     doctor_name: doctor_name,
-                                    fulldate: fulldate
+                                    fulldate: fulldate,
+                                    medicine: medicine_1,
+                                    status: status_2
                                 }
                             }
                         })

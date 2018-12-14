@@ -277,6 +277,7 @@ function buyItem() {
 						    	patient_name
 						    	fulldate
 						    	medicine
+						    	status
 						  	}
 						}`;
 
@@ -319,9 +320,11 @@ function buyItem() {
 						  	})
 						}).then(r => r.json()).then(function(data) {
 							console.log(data);
-							let medicine = name;
 							if(data.data.consult == null) {
-								$.get('http://localhost:3000/add-consult', {patient_name: patient_name, medicine: name}, function(data) {
+								let medicine = [];
+								medicine.push(name);
+								let status = "pending";
+								$.get('http://localhost:3000/add-consult', {patient_name: patient_name, medicine: medicine, status: status}, function(data) {
 									let query = `mutation createConsult($input:ConsultInput) {
 									  	createConsult(input: $input) {
 									    	patient_name
@@ -339,18 +342,29 @@ function buyItem() {
 									    	variables: {
 									      		input: {
 									      			patient_name,
-									        		medicine
+									        		medicine,
+									        		status
 									      		}
 									    	}
 									  	})
 									}).then(r => r.json()).then(function(data) {
 										console.log(data);
 									});
-									// window.location.replace("http://localhost:3001/consult/consult.html");
 								});
 							}
 							else {
-								$.get('http://localhost:3000/update-consult', {patient_name: patient_name, doctor_name: data.data.consult.doctor_name, fulldate: data.data.consult.fulldate, medicine: name}, function(data) {
+								let medicine = data.data.consult.medicine;
+								let status = data.data.consult.status;
+								if(medicine) {
+									medicine.push(name);
+								}
+								else {
+									medicine = [];
+									medicine.push(name);
+								}
+								let doctor_name = data.data.consult.doctor_name;
+								let fulldate = data.data.consult.fulldate;
+								$.get('http://localhost:3000/update-consult', {patient_name: patient_name, doctor_name: doctor_name, fulldate: fulldate, medicine: medicine, status: status}, function(data) {
 									let query = `mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {
 									  	updateConsult(patient_name: $patientName, input: $input) {
 									    	patient_name
@@ -369,7 +383,10 @@ function buyItem() {
 									    		patientName,
 									      		input: {
 									      			patient_name,
-									        		medicine
+									      			doctor_name,
+									      			fulldate,
+									        		medicine,
+									        		status
 									      		}
 									    	}
 									  	})
@@ -380,7 +397,7 @@ function buyItem() {
 							}
 						});
 						alert("Buy Item Success");
-						// window.location.replace("http://localhost:3001/commerce/commerce.html");
+						window.location.replace("http://localhost:3001/commerce/commerce.html");
 					}
 					else {
 						alert("Buy Item Error");

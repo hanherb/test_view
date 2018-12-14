@@ -192,6 +192,7 @@ function consultDoctor() {
 		    	patient_name
 		    	fulldate
 		    	medicine
+		    	status
 		  	}
 		}`;
 
@@ -210,7 +211,8 @@ function consultDoctor() {
 		  	})
 		}).then(r => r.json()).then(function(data) {
 			if(data.data.consult == null) {
-				$.get('http://localhost:3000/add-consult', {patient_name: patient_name, doctor_name: doctor_name, fulldate: fulldate}, function(data) {
+				let status = "pending";
+				$.get('http://localhost:3000/add-consult', {patient_name: patient_name, doctor_name: doctor_name, fulldate: fulldate, status: status}, function(data) {
 					let query = `mutation createConsult($input:ConsultInput) {
 					  	createConsult(input: $input) {
 					    	patient_name
@@ -229,7 +231,8 @@ function consultDoctor() {
 					      		input: {
 					      			patient_name,
 					        		doctor_name,
-					        		fulldate
+					        		fulldate,
+					        		status
 					      		}
 					    	}
 					  	})
@@ -241,7 +244,9 @@ function consultDoctor() {
 				});
 			}
 			else {
-				$.get('http://localhost:3000/update-consult', {patient_name: patient_name, doctor_name: doctor_name, fulldate: fulldate, medicine: data.data.consult.medicine}, function(data) {
+				let medicine = data.data.consult.medicine;
+				let status = data.data.consult.status;
+				$.get('http://localhost:3000/update-consult', {patient_name: patient_name, doctor_name: doctor_name, fulldate: fulldate, medicine: medicine, status: status}, function(data) {
 					let query = `mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {
 					  	updateConsult(patient_name: $patientName, input: $input) {
 					    	patient_name
@@ -261,7 +266,9 @@ function consultDoctor() {
 					      		input: {
 					      			patient_name,
 					        		doctor_name,
-					        		fulldate
+					        		fulldate,
+					        		medicine,
+					        		status
 					      		}
 					    	}
 					  	})

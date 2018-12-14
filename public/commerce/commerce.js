@@ -211,7 +211,7 @@ function buyItem() {
             setTimeout(function () {
                 $.get('http://localhost:3000/buy-item', { name: name, qty: qty }, function (data) {
                     if (data.ok == 1) {
-                        var query_1 = "mutation updateSingleItem($itemName:String!, $input:CommerceInput) {\n\t\t\t\t\t\t  \tupdateCommerce(name: $itemName, input: $input) {\n\t\t\t\t\t\t    \tname\n\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\tquery getSingleConsult($patientName: String!) {\n\t\t\t\t\t  \t\tconsult(patient_name: $patientName) {\n\t\t\t\t\t\t\t\tdoctor_name\n\t\t\t\t\t\t    \tpatient_name\n\t\t\t\t\t\t    \tfulldate\n\t\t\t\t\t\t    \tmedicine\n\t\t\t\t\t\t  \t}\n\t\t\t\t\t\t}";
+                        var query_1 = "mutation updateSingleItem($itemName:String!, $input:CommerceInput) {\n\t\t\t\t\t\t  \tupdateCommerce(name: $itemName, input: $input) {\n\t\t\t\t\t\t    \tname\n\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\tquery getSingleConsult($patientName: String!) {\n\t\t\t\t\t  \t\tconsult(patient_name: $patientName) {\n\t\t\t\t\t\t\t\tdoctor_name\n\t\t\t\t\t\t    \tpatient_name\n\t\t\t\t\t\t    \tfulldate\n\t\t\t\t\t\t    \tmedicine\n\t\t\t\t\t\t    \tstatus\n\t\t\t\t\t\t  \t}\n\t\t\t\t\t\t}";
                         fetch('http://localhost:3000/graphql', {
                             method: 'POST',
                             headers: {
@@ -250,9 +250,11 @@ function buyItem() {
                             })
                         }).then(function (r) { return r.json(); }).then(function (data) {
                             console.log(data);
-                            var medicine = name;
                             if (data.data.consult == null) {
-                                $.get('http://localhost:3000/add-consult', { patient_name: patient_name, medicine: name }, function (data) {
+                                var medicine_1 = [];
+                                medicine_1.push(name);
+                                var status_1 = "pending";
+                                $.get('http://localhost:3000/add-consult', { patient_name: patient_name, medicine: medicine_1, status: status_1 }, function (data) {
                                     var query = "mutation createConsult($input:ConsultInput) {\n\t\t\t\t\t\t\t\t\t  \tcreateConsult(input: $input) {\n\t\t\t\t\t\t\t\t\t    \tpatient_name\n\t\t\t\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t\t\t\t}";
                                     fetch('http://localhost:3000/graphql', {
                                         method: 'POST',
@@ -265,18 +267,29 @@ function buyItem() {
                                             variables: {
                                                 input: {
                                                     patient_name: patient_name,
-                                                    medicine: medicine
+                                                    medicine: medicine_1,
+                                                    status: status_1
                                                 }
                                             }
                                         })
                                     }).then(function (r) { return r.json(); }).then(function (data) {
                                         console.log(data);
                                     });
-                                    // window.location.replace("http://localhost:3001/consult/consult.html");
                                 });
                             }
                             else {
-                                $.get('http://localhost:3000/update-consult', { patient_name: patient_name, doctor_name: data.data.consult.doctor_name, fulldate: data.data.consult.fulldate, medicine: name }, function (data) {
+                                var medicine_2 = data.data.consult.medicine;
+                                var status_2 = data.data.consult.status;
+                                if (medicine_2) {
+                                    medicine_2.push(name);
+                                }
+                                else {
+                                    medicine_2 = [];
+                                    medicine_2.push(name);
+                                }
+                                var doctor_name_1 = data.data.consult.doctor_name;
+                                var fulldate_1 = data.data.consult.fulldate;
+                                $.get('http://localhost:3000/update-consult', { patient_name: patient_name, doctor_name: doctor_name_1, fulldate: fulldate_1, medicine: medicine_2, status: status_2 }, function (data) {
                                     var query = "mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {\n\t\t\t\t\t\t\t\t\t  \tupdateConsult(patient_name: $patientName, input: $input) {\n\t\t\t\t\t\t\t\t\t    \tpatient_name\n\t\t\t\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t\t\t\t}";
                                     fetch('http://localhost:3000/graphql', {
                                         method: 'POST',
@@ -290,7 +303,10 @@ function buyItem() {
                                                 patientName: patientName,
                                                 input: {
                                                     patient_name: patient_name,
-                                                    medicine: medicine
+                                                    doctor_name: doctor_name_1,
+                                                    fulldate: fulldate_1,
+                                                    medicine: medicine_2,
+                                                    status: status_2
                                                 }
                                             }
                                         })
@@ -301,7 +317,7 @@ function buyItem() {
                             }
                         });
                         alert("Buy Item Success");
-                        // window.location.replace("http://localhost:3001/commerce/commerce.html");
+                        window.location.replace("http://localhost:3001/commerce/commerce.html");
                     }
                     else {
                         alert("Buy Item Error");
