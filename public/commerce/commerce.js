@@ -211,7 +211,7 @@ function buyItem() {
             setTimeout(function () {
                 $.get('http://localhost:3000/buy-item', { name: name, qty: qty }, function (data) {
                     if (data.ok == 1) {
-                        var query_1 = "mutation updateSingleItem($itemName:String!, $input:CommerceInput) {\n\t\t\t\t\t\t  \tupdateCommerce(name: $itemName, input: $input) {\n\t\t\t\t\t\t    \tname\n\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\tquery getSingleConsult($patientName: String!) {\n\t\t\t\t\t  \t\tconsult(patient_name: $patientName) {\n\t\t\t\t\t\t\t\tdoctor_name\n\t\t\t\t\t\t    \tpatient_name\n\t\t\t\t\t\t    \tfulldate\n\t\t\t\t\t\t    \tmedicine\n\t\t\t\t\t\t    \tstatus\n\t\t\t\t\t\t  \t}\n\t\t\t\t\t\t}";
+                        var query_1 = "mutation updateSingleItem($itemName:String!, $input:CommerceInput) {\n\t\t\t\t\t\t  \tupdateCommerce(name: $itemName, input: $input) {\n\t\t\t\t\t\t    \tname\n\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\tquery getSingleConsult($patientName: String!) {\n\t\t\t\t\t  \t\tconsultMed(patient_name: $patientName) {\n\t\t\t\t\t\t\t\tdoctor_name\n\t\t\t\t\t\t    \tpatient_name\n\t\t\t\t\t\t    \tcheckin_date\n\t\t\t\t\t\t    \tmedicine\n\t\t\t\t\t\t    \tstatus\n\t\t\t\t\t\t  \t}\n\t\t\t\t\t\t}";
                         fetch('http://localhost:3000/graphql', {
                             method: 'POST',
                             headers: {
@@ -250,7 +250,7 @@ function buyItem() {
                             })
                         }).then(function (r) { return r.json(); }).then(function (data) {
                             console.log(data);
-                            if (data.data.consult == null) {
+                            if (data.data.consultMed == null) {
                                 var medicine_1 = [];
                                 medicine_1.push(name);
                                 var status_1 = "pending";
@@ -278,8 +278,8 @@ function buyItem() {
                                 });
                             }
                             else {
-                                var medicine_2 = data.data.consult.medicine;
-                                var status_2 = data.data.consult.status;
+                                var medicine_2 = data.data.consultMed.medicine;
+                                var status_2 = data.data.consultMed.status;
                                 if (medicine_2) {
                                     medicine_2.push(name);
                                 }
@@ -287,9 +287,9 @@ function buyItem() {
                                     medicine_2 = [];
                                     medicine_2.push(name);
                                 }
-                                var doctor_name_1 = data.data.consult.doctor_name;
-                                var fulldate_1 = data.data.consult.fulldate;
-                                $.get('http://localhost:3000/update-consult', { patient_name: patient_name, doctor_name: doctor_name_1, fulldate: fulldate_1, medicine: medicine_2, status: status_2 }, function (data) {
+                                var doctor_name_1 = data.data.consultMed.doctor_name;
+                                var checkin_date_1 = data.data.consultMed.checkin_date;
+                                $.get('http://localhost:3000/update-consult', { patient_name: patient_name, doctor_name: doctor_name_1, checkin_date: checkin_date_1, medicine: medicine_2, status: status_2 }, function (data) {
                                     var query = "mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {\n\t\t\t\t\t\t\t\t\t  \tupdateConsult(patient_name: $patientName, input: $input) {\n\t\t\t\t\t\t\t\t\t    \tpatient_name\n\t\t\t\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t\t\t\t}";
                                     fetch('http://localhost:3000/graphql', {
                                         method: 'POST',
@@ -304,7 +304,7 @@ function buyItem() {
                                                 input: {
                                                     patient_name: patient_name,
                                                     doctor_name: doctor_name_1,
-                                                    fulldate: fulldate_1,
+                                                    checkin_date: checkin_date_1,
                                                     medicine: medicine_2,
                                                     status: status_2
                                                 }
@@ -312,12 +312,37 @@ function buyItem() {
                                         })
                                     }).then(function (r) { return r.json(); }).then(function (data) {
                                         console.log(data);
+                                        var patientName = patient_name;
+                                        console.log(patient_name);
+                                        var prevStatus = "waitmed";
+                                        var status = "finished";
+                                        $.get('http://localhost:3000/update-status-consult', { patient_name: patient_name, status: status, prevStatus: prevStatus }, function (data) {
+                                            var query = "mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {\n\t\t\t\t\t\t\t\t\t\t\t  \tupdateConsult(patient_name: $patientName, input: $input) {\n\t\t\t\t\t\t\t\t\t\t\t    \tpatient_name\n\t\t\t\t\t\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t\t\t\t\t\t}";
+                                            fetch('http://localhost:3000/graphql', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'Accept': 'application/json'
+                                                },
+                                                body: JSON.stringify({
+                                                    query: query,
+                                                    variables: {
+                                                        patientName: patientName,
+                                                        input: {
+                                                            status: status
+                                                        }
+                                                    }
+                                                })
+                                            }).then(function (r) { return r.json(); }).then(function (data) {
+                                                console.log(data);
+                                            });
+                                        });
                                     });
                                 });
                             }
                         });
                         alert("Buy Item Success");
-                        window.location.replace("http://localhost:3001/commerce/commerce.html");
+                        // window.location.replace("http://localhost:3001/commerce/commerce.html");
                     }
                     else {
                         alert("Buy Item Error");

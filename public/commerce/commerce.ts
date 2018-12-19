@@ -272,10 +272,10 @@ function buyItem() {
 						}
 
 						query getSingleConsult($patientName: String!) {
-					  		consult(patient_name: $patientName) {
+					  		consultMed(patient_name: $patientName) {
 								doctor_name
 						    	patient_name
-						    	fulldate
+						    	checkin_date
 						    	medicine
 						    	status
 						  	}
@@ -320,7 +320,7 @@ function buyItem() {
 						  	})
 						}).then(r => r.json()).then(function(data) {
 							console.log(data);
-							if(data.data.consult == null) {
+							if(data.data.consultMed == null) {
 								let medicine = [];
 								medicine.push(name);
 								let status = "pending";
@@ -353,8 +353,8 @@ function buyItem() {
 								});
 							}
 							else {
-								let medicine = data.data.consult.medicine;
-								let status = data.data.consult.status;
+								let medicine = data.data.consultMed.medicine;
+								let status = data.data.consultMed.status;
 								if(medicine) {
 									medicine.push(name);
 								}
@@ -362,9 +362,9 @@ function buyItem() {
 									medicine = [];
 									medicine.push(name);
 								}
-								let doctor_name = data.data.consult.doctor_name;
-								let fulldate = data.data.consult.fulldate;
-								$.get('http://localhost:3000/update-consult', {patient_name: patient_name, doctor_name: doctor_name, fulldate: fulldate, medicine: medicine, status: status}, function(data) {
+								let doctor_name = data.data.consultMed.doctor_name;
+								let checkin_date = data.data.consultMed.checkin_date;
+								$.get('http://localhost:3000/update-consult', {patient_name: patient_name, doctor_name: doctor_name, checkin_date: checkin_date, medicine: medicine, status: status}, function(data) {
 									let query = `mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {
 									  	updateConsult(patient_name: $patientName, input: $input) {
 									    	patient_name
@@ -384,7 +384,7 @@ function buyItem() {
 									      		input: {
 									      			patient_name,
 									      			doctor_name,
-									      			fulldate,
+									      			checkin_date,
 									        		medicine,
 									        		status
 									      		}
@@ -392,12 +392,42 @@ function buyItem() {
 									  	})
 									}).then(r => r.json()).then(function(data) {
 										console.log(data);
+										let patientName: string = patient_name;
+										console.log(patient_name);
+										let prevStatus: string = "waitmed";
+										let status: string = "finished";
+										$.get('http://localhost:3000/update-status-consult', {patient_name: patient_name, status: status, prevStatus: prevStatus}, function(data) {
+											let query = `mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {
+											  	updateConsult(patient_name: $patientName, input: $input) {
+											    	patient_name
+										  		}
+											}`;
+
+											fetch('http://localhost:3000/graphql', {
+										  		method: 'POST',
+											  	headers: {
+											    	'Content-Type': 'application/json',
+											    	'Accept': 'application/json',
+											  	},
+											  	body: JSON.stringify({
+													query,
+											    	variables: {
+											    		patientName,
+											      		input: {
+											        		status
+											      		}
+											    	}
+											  	})
+											}).then(r => r.json()).then(function(data) {
+												console.log(data);
+											});
+										});
 									});
 								});
 							}
 						});
 						alert("Buy Item Success");
-						window.location.replace("http://localhost:3001/commerce/commerce.html");
+						// window.location.replace("http://localhost:3001/commerce/commerce.html");
 					}
 					else {
 						alert("Buy Item Error");
