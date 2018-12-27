@@ -287,7 +287,7 @@ function buyItem() {
                             if (data.data.consultMed == null) {
                                 var medicine_1 = [];
                                 medicine_1.push(name);
-                                var status_1 = "finished";
+                                var status_1 = "pending";
                                 $.get('http://localhost:3000/add-consult', { patient_name: patient_name, medicine: medicine_1, status: status_1 }, function (data) {
                                     var query = "mutation createConsult($input:ConsultInput) {\n\t\t\t\t\t\t\t\t\t  \tcreateConsult(input: $input) {\n\t\t\t\t\t\t\t\t\t    \tpatient_name\n\t\t\t\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t\t\t\t}";
                                     fetch('http://localhost:3000/graphql', {
@@ -308,8 +308,6 @@ function buyItem() {
                                         })
                                     }).then(function (r) { return r.json(); }).then(function (data) {
                                         console.log(data);
-                                        alert("Buy Item Success");
-                                        window.location.replace("http://localhost:3001/commerce/commerce.html");
                                     });
                                 });
                             }
@@ -325,7 +323,7 @@ function buyItem() {
                                 }
                                 var doctor_name_1 = data.data.consultMed.doctor_name;
                                 var checkin_date_1 = data.data.consultMed.checkin_date;
-                                $.get('http://localhost:3000/update-specific-consult', { patient_name: patient_name, doctor_name: doctor_name_1, checkin_date: checkin_date_1, medicine: medicine_2, status: status_2 }, function (data) {
+                                $.get('http://localhost:3000/update-consult', { patient_name: patient_name, doctor_name: doctor_name_1, checkin_date: checkin_date_1, medicine: medicine_2, status: status_2 }, function (data) {
                                     var query = "mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {\n\t\t\t\t\t\t\t\t\t  \tupdateConsult(patient_name: $patientName, input: $input) {\n\t\t\t\t\t\t\t\t\t    \tpatient_name\n\t\t\t\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t\t\t\t}";
                                     fetch('http://localhost:3000/graphql', {
                                         method: 'POST',
@@ -371,14 +369,14 @@ function buyItem() {
                                                 })
                                             }).then(function (r) { return r.json(); }).then(function (data) {
                                                 console.log(data);
-                                                alert("Buy Item Success");
-                                                window.location.replace("http://localhost:3001/commerce/commerce.html");
                                             });
                                         });
                                     });
                                 });
                             }
                         });
+                        alert("Buy Item Success");
+                        window.location.replace("http://localhost:3001/commerce/commerce.html");
                     }
                     else {
                         alert("Buy Item Error");

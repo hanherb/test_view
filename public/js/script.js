@@ -476,8 +476,15 @@ function navPlugin() {
                             else if (data2.role == 'doctor') {
                                 $('.plugin-nav').append('<li><a href="/' + data.data.plugins[i].name + '/list-' + data.data.plugins[i].name + '.html">' + data.data.plugins[i].name + '</a></li>');
                             }
-                            else {
+                            else if (data2.role == 'admin') {
                                 $('.plugin-nav').append('<li><a href="/' + data.data.plugins[i].name + '/admin-' + data.data.plugins[i].name + '.html">' + data.data.plugins[i].name + '</a></li>');
+                            }
+                        });
+                    }
+                    else if (data.data.plugins[i].name == 'supply') {
+                        $.get('http://localhost:3001/check-session', {}, function (data2) {
+                            if (data2.role == 'supplier') {
+                                $('.plugin-nav').append('<li><a href="/' + data.data.plugins[i].name + '/' + data.data.plugins[i].name + '.html">' + data.data.plugins[i].name + '</a></li>');
                             }
                         });
                     }
@@ -519,6 +526,7 @@ function getPlugin() {
             variables: {}
         })
     }).then(function (r) { return r.json(); }).then(function (data) {
+        console.log(data);
         setTimeout(function () {
             $('#plugin-list').find('.checkbox input').each(function () {
                 for (var i = 0; i < data.data.plugins.length; i++) {
@@ -532,7 +540,7 @@ function getPlugin() {
                     }
                 }
             });
-        }, 50);
+        }, 100);
     });
 }
 //--

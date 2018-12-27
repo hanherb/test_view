@@ -222,13 +222,15 @@ function listConsult() {
             var patient_name = data.data.consults[i].patient_name;
             var checkin_date = data.data.consults[i].checkin_date;
             var status_2 = data.data.consults[i].status;
-            $('#tablePatient tbody').append('<tr class="tr_data">' +
-                '<td>' + (i + 1) + '</td>' +
-                '<td>' + doctor_name + '</td>' +
-                '<td>' + patient_name + '</td>' +
-                '<td>' + checkin_date + '</td>' +
-                '<td>' + status_2 + '</td>' +
-                '</tr>');
+            if (doctor_name) {
+                $('#tablePatient tbody').append('<tr class="tr_data">' +
+                    '<td>' + (i + 1) + '</td>' +
+                    '<td>' + doctor_name + '</td>' +
+                    '<td>' + patient_name + '</td>' +
+                    '<td>' + checkin_date + '</td>' +
+                    '<td>' + status_2 + '</td>' +
+                    '</tr>');
+            }
         }
     });
 }
@@ -318,7 +320,7 @@ function consultDoctor() {
             else {
                 var medicine_1 = data.data.consultPending.medicine;
                 var status_4 = data.data.consultPending.status;
-                $.get('http://localhost:3000/update-pending-consult', { patient_name: patient_name, doctor_name: doctor_name, checkin_date: checkin_date, medicine: medicine_1, status: status_4 }, function (data) {
+                $.get('http://localhost:3000/update-specific-consult', { patient_name: patient_name, doctor_name: doctor_name, checkin_date: checkin_date, medicine: medicine_1, status: status_4 }, function (data) {
                     var query = "mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {\n\t\t\t\t\t  \tupdateConsult(patient_name: $patientName, input: $input) {\n\t\t\t\t\t    \tpatient_name\n\t\t\t\t  \t\t}\n\t\t\t\t\t}";
                     fetch('http://localhost:3000/graphql', {
                         method: 'POST',

@@ -363,7 +363,7 @@ function buyItem() {
 							if(data.data.consultMed == null) {
 								let medicine = [];
 								medicine.push(name);
-								let status = "finished";
+								let status = "pending";
 								$.get('http://localhost:3000/add-consult', {patient_name: patient_name, medicine: medicine, status: status}, function(data) {
 									let query = `mutation createConsult($input:ConsultInput) {
 									  	createConsult(input: $input) {
@@ -389,8 +389,6 @@ function buyItem() {
 									  	})
 									}).then(r => r.json()).then(function(data) {
 										console.log(data);
-										alert("Buy Item Success");
-										window.location.replace("http://localhost:3001/commerce/commerce.html");
 									});
 								});
 							}
@@ -406,7 +404,7 @@ function buyItem() {
 								}
 								let doctor_name = data.data.consultMed.doctor_name;
 								let checkin_date = data.data.consultMed.checkin_date;
-								$.get('http://localhost:3000/update-specific-consult', {patient_name: patient_name, doctor_name: doctor_name, checkin_date: checkin_date, medicine: medicine, status: status}, function(data) {
+								$.get('http://localhost:3000/update-consult', {patient_name: patient_name, doctor_name: doctor_name, checkin_date: checkin_date, medicine: medicine, status: status}, function(data) {
 									let query = `mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {
 									  	updateConsult(patient_name: $patientName, input: $input) {
 									    	patient_name
@@ -462,14 +460,14 @@ function buyItem() {
 											  	})
 											}).then(r => r.json()).then(function(data) {
 												console.log(data);
-												alert("Buy Item Success");
-												window.location.replace("http://localhost:3001/commerce/commerce.html");
 											});
 										});
 									});
 								});
 							}
 						});
+						alert("Buy Item Success");
+						window.location.replace("http://localhost:3001/commerce/commerce.html");
 					}
 					else {
 						alert("Buy Item Error");
