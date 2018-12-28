@@ -132,11 +132,10 @@ function loginUser() {
     }
     else {
         $.get(address + ':3000/login-user', { email: email, password: password }, function (data) {
-            console.log(data);
-            if (data) {
+            if (data.email) {
                 $.get(address + ':3001/assign-session', { data: data }, function (data2) {
                     alert("Login Success");
-//                     window.location.replace(address + ":3001/");
+                    window.location.replace(address + ":3001/");
                 });
             }
             else {
