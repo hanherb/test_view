@@ -1,3 +1,5 @@
+var address = 'http://141.136.47.202';
+// let address = 'http://localhost';
 // if(navigator.serviceWorker) {
 //   	navigator.serviceWorker.register('/sw.js');
 // }
@@ -5,7 +7,7 @@ $(function () {
     $(".nav").load("././navbar.html");
 });
 function authCheck(type, callback) {
-    $.get('http://localhost:3001/check-session', {}, function (data) {
+    $.get(address + '/check-session', {}, function (data) {
         if (data != 'no session') {
             if (type == 'user') {
                 if (data.authority.api.user == 1) {
@@ -14,7 +16,7 @@ function authCheck(type, callback) {
                 }
                 else {
                     alert("You don't have enough permission");
-                    window.location.replace("http://localhost:3001/");
+                    window.location.replace(address + ":3001/");
                 }
             }
             else if (type == 'plugin') {
@@ -24,20 +26,20 @@ function authCheck(type, callback) {
                 }
                 else {
                     alert("You don't have enough permission");
-                    window.location.replace("http://localhost:3001/");
+                    window.location.replace(address + ":3001/");
                 }
             }
         }
         else {
             alert("You have to login first");
-            window.location.replace("http://localhost:3001/");
+            window.location.replace(address + ":3001/");
         }
     });
 }
 // menampilkan ke #tableUser di dashboard.html
 function getUser() {
     var query = "query getAllUser {\n\t\t\t\t  users {\n\t\t\t\t    fullname\n\t\t\t\t    email\n\t\t\t\t    role\n\t\t\t\t    authority {\n\t\t\t\t      user {\n\t\t\t\t        read\n\t\t\t\t        create\n\t\t\t\t        update\n\t\t\t\t        delete\n\t\t\t\t      }\n\t\t\t\t    \tapi {\n\t\t\t\t        user\n\t\t\t\t        plugin\n\t\t\t\t      }\n\t\t\t\t    }\n\t\t\t\t  }\n\t\t\t\t}";
-    fetch('http://localhost:3000/graphql', {
+    fetch(address + ':3000/graphql', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -87,10 +89,10 @@ function registerUser() {
         alert("Password doesn't match");
     }
     else {
-        $.get('http://localhost:3000/register-user', { email: email, fullname: fullname, password: password, role: role, authority: authority }, function (data) {
+        $.get(address + ':3000/register-user', { email: email, fullname: fullname, password: password, role: role, authority: authority }, function (data) {
             if (data == 1) {
                 var query = "mutation createSingleUser($input:PersonInput) {\n\t\t\t\t  \tcreateUser(input: $input) {\n\t\t\t\t    \tfullname\n\t\t\t  \t\t}\n\t\t\t\t}";
-                fetch('http://localhost:3000/graphql', {
+                fetch(address + ':3000/graphql', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -112,7 +114,7 @@ function registerUser() {
                     console.log(data);
                 });
                 alert("Register Success");
-                window.location.replace("http://localhost:3001/index.html");
+                window.location.replace(address + ":3001/index.html");
             }
             else {
                 alert("Register Error");
@@ -129,11 +131,11 @@ function loginUser() {
         alert("Form cannot be empty");
     }
     else {
-        $.get('http://localhost:3000/login-user', { email: email, password: password }, function (data) {
+        $.get(address + ':3000/login-user', { email: email, password: password }, function (data) {
             if (data) {
-                $.get('http://localhost:3001/assign-session', { data: data }, function (data2) {
+                $.get(address + ':3001/assign-session', { data: data }, function (data2) {
                     alert("Login Success");
-                    window.location.replace("http://localhost:3001/");
+                    window.location.replace(address + ":3001/");
                 });
             }
             else {
@@ -145,7 +147,7 @@ function loginUser() {
 //--
 // cek apakah ada session yang aktif atau tidak
 function checkSession() {
-    $.get('http://localhost:3001/check-session', {}, function (data) {
+    $.get(address + ':3001/check-session', {}, function (data) {
         setTimeout(function () {
             if (data.email) {
                 $('.session').addClass("show");
@@ -166,7 +168,7 @@ function checkSession() {
 //--
 // setting CRUD user (trigger function ada di atribut onclick setiap button)
 function manageUser(action, email) {
-    $.get('http://localhost:3001/check-session', {}, function (data) {
+    $.get(address + ':3001/check-session', {}, function (data) {
         if (action == "create") {
             if (data.authority.user.create == 1) {
                 $('#modalCreate').modal('toggle');
@@ -184,7 +186,7 @@ function manageUser(action, email) {
                 $('.checkbox input').prop('checked', false);
                 var userEmail = email;
                 var query = "query getSingleUser($userEmail: String!) {\n\t\t\t\t    user(email: $userEmail) {\n\t\t\t    \t\tfullname\n\t\t\t\t        email\n\t\t\t\t        role\n\t\t\t\t    \t\tauthority {\n\t\t\t\t          user {\n\t\t\t\t            read\n\t\t\t\t            create\n\t\t\t\t            update\n\t\t\t\t            delete\n\t\t\t\t          }\n\t\t\t\t        \tapi {\n\t\t\t\t            user\n\t\t\t\t            plugin\n\t\t\t\t          }\n\t\t\t\t        }\n\t\t\t\t    }\n\t\t\t\t}";
-                fetch('http://localhost:3000/graphql', {
+                fetch(address + ':3000/graphql', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -221,7 +223,7 @@ function manageUser(action, email) {
                 $('#modalDelete').modal('toggle');
                 var userEmail = email;
                 var query = "query getSingleUser($userEmail: String!) {\n\t\t\t\t    user(email: $userEmail) {\n\t\t\t    \t\tfullname\n\t\t\t\t        email\n\t\t\t\t        role\n\t\t\t\t    \t\tauthority {\n\t\t\t\t          user {\n\t\t\t\t            read\n\t\t\t\t            create\n\t\t\t\t            update\n\t\t\t\t            delete\n\t\t\t\t          }\n\t\t\t\t        \tapi {\n\t\t\t\t            user\n\t\t\t\t            plugin\n\t\t\t\t          }\n\t\t\t\t        }\n\t\t\t\t    }\n\t\t\t\t}";
-                fetch('http://localhost:3000/graphql', {
+                fetch(address + ':3000/graphql', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -295,11 +297,11 @@ function updateUser() {
         alert("Form cannot be empty");
     }
     else {
-        $.get('http://localhost:3000/update-user', { email: email, fullname: fullname, role: role, authority: authority }, function (data) {
+        $.get(address + ':3000/update-user', { email: email, fullname: fullname, role: role, authority: authority }, function (data) {
             if (data.ok == 1) {
                 var userEmail = email;
                 var query = "mutation updateSingleUser($userEmail:String!, $input:PersonInput) {\n\t\t\t\t  \tupdateUser(email: $userEmail, input: $input) {\n\t\t\t\t    \tfullname\n\t\t\t  \t\t}\n\t\t\t\t}";
-                fetch('http://localhost:3000/graphql', {
+                fetch(address + ':3000/graphql', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -321,7 +323,7 @@ function updateUser() {
                     console.log(data);
                 });
                 alert("Update Success");
-                window.location.replace("http://localhost:3001/dashboard.html");
+                window.location.replace(address + ":3001/dashboard.html");
             }
             else {
                 alert("Update Error");
@@ -386,10 +388,10 @@ function createUser() {
         alert("Password doesn't match");
     }
     else {
-        $.get('http://localhost:3000/create-user', { email: email, fullname: fullname, role: role, password: password, authority: authority }, function (data) {
+        $.get(address + ':3000/create-user', { email: email, fullname: fullname, role: role, password: password, authority: authority }, function (data) {
             if (data == 1) {
                 var query = "mutation createSingleUser($input:PersonInput) {\n\t\t\t\t  \tcreateUser(input: $input) {\n\t\t\t\t    \tfullname\n\t\t\t  \t\t}\n\t\t\t\t}";
-                fetch('http://localhost:3000/graphql', {
+                fetch(address + ':3000/graphql', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -411,7 +413,7 @@ function createUser() {
                     console.log(data);
                 });
                 alert("Create Success");
-                window.location.replace("http://localhost:3001/dashboard.html");
+                window.location.replace(address + ":3001/dashboard.html");
             }
             else {
                 alert("Create Error");
@@ -423,11 +425,11 @@ function createUser() {
 //delete user data dari dashboard.html
 function deleteUser() {
     var email = $('#delete-email').html();
-    $.get('http://localhost:3000/delete-user', { email: email }, function (data) {
+    $.get(address + ':3000/delete-user', { email: email }, function (data) {
         if (data.ok == 1) {
             var userEmail = email;
             var query = "mutation deleteSingleUser($userEmail:String!) {\n\t\t\t  \tdeleteUser(email: $userEmail) {\n\t\t\t    \tfullname\n\t\t  \t\t}\n\t\t\t}";
-            fetch('http://localhost:3000/graphql', {
+            fetch(address + ':3000/graphql', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -443,7 +445,7 @@ function deleteUser() {
                 console.log(data);
             });
             alert("Delete Success");
-            window.location.replace("http://localhost:3001/dashboard.html");
+            window.location.replace(address + ":3001/dashboard.html");
         }
         else {
             alert("Delete Error");
@@ -454,7 +456,7 @@ function deleteUser() {
 //setting plugin navbar
 function navPlugin() {
     var query = "query getAllPlugin {\n\t  plugins {\n\t    name\n\t    status\n\t  }\n\t}";
-    fetch('http://localhost:3000/graphql', {
+    fetch(address + ':3000/graphql', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -469,7 +471,7 @@ function navPlugin() {
             var _loop_1 = function (i) {
                 if (data.data.plugins[i].status == 1) {
                     if (data.data.plugins[i].name == 'consult') {
-                        $.get('http://localhost:3001/check-session', {}, function (data2) {
+                        $.get(address + ':3001/check-session', {}, function (data2) {
                             if (data2.role == 'user') {
                                 $('.plugin-nav').append('<li><a href="/' + data.data.plugins[i].name + '/' + data.data.plugins[i].name + '.html">' + data.data.plugins[i].name + '</a></li>');
                             }
@@ -482,7 +484,7 @@ function navPlugin() {
                         });
                     }
                     else if (data.data.plugins[i].name == 'supply') {
-                        $.get('http://localhost:3001/check-session', {}, function (data2) {
+                        $.get(address + ':3001/check-session', {}, function (data2) {
                             if (data2.role == 'supplier') {
                                 $('.plugin-nav').append('<li><a href="/' + data.data.plugins[i].name + '/' + data.data.plugins[i].name + '.html">' + data.data.plugins[i].name + '</a></li>');
                             }
@@ -502,7 +504,7 @@ function navPlugin() {
 //--
 //setting plugin list
 function listPlugin() {
-    $.get('http://localhost:3000/list-plugin', {}, function (data) {
+    $.get(address + ':3000/list-plugin', {}, function (data) {
         console.log(data);
         for (var i = 0; i < data.length; i++) {
             $('#plugin-list').append('<div class="checkbox cb-' + data[i] + '">' +
@@ -515,7 +517,7 @@ function listPlugin() {
 //seting checklist pada plugin list
 function getPlugin() {
     var query = "query getAllPlugin {\n\t  plugins {\n\t    name\n\t    status\n\t  }\n\t}";
-    fetch('http://localhost:3000/graphql', {
+    fetch(address + ':3000/graphql', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -560,14 +562,14 @@ function addPlugin() {
             plugin.status.push(0);
         }
     });
-    $.get('http://localhost:3000/add-plugin', { plugin: plugin }, function (data) {
+    $.get(address + ':3000/add-plugin', { plugin: plugin }, function (data) {
         console.log(data);
         for (var i = 0; i < plugin.name.length; i++) {
             var name_1 = plugin.name[i];
             var status_1 = plugin.status[i];
             var pluginName = name_1;
             var query = "mutation updateSinglePlugin($pluginName:String!, $input:PluginInput) {\n\t\t\t  \tupdatePlugin(name: $pluginName, input: $input) {\n\t\t\t    \tname\n\t\t  \t\t}\n\t\t\t}";
-            fetch('http://localhost:3000/graphql', {
+            fetch(address + ':3000/graphql', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -591,7 +593,7 @@ function addPlugin() {
             var name_2 = data.name;
             var status_2 = Number(data.status);
             var query = "mutation createSinglePlugin($input:PluginInput) {\n\t\t\t  \tcreatePlugin(input: $input) {\n\t\t\t    \tname\n\t\t  \t\t}\n\t\t\t}";
-            fetch('http://localhost:3000/graphql', {
+            fetch(address + ':3000/graphql', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -611,7 +613,7 @@ function addPlugin() {
             });
         }
         alert("Plugin Updated");
-        window.location.replace("http://localhost:3001/add-plugin.html");
+        window.location.replace(address + ":3001/add-plugin.html");
     });
 }
 //--

@@ -1,3 +1,5 @@
+let address = 'http://141.136.47.202';
+
 //menampilkan list doctor pada halaman consult.html
 function listDoctor() {
 	let query = `query getAllUser {
@@ -20,7 +22,7 @@ function listDoctor() {
 	  	}
 	}`;
 
-	fetch('http://localhost:3000/graphql', {
+	fetch(address + ':3000/graphql', {
   		method: 'POST',
 	  	headers: {
 	    	'Content-Type': 'application/json',
@@ -61,7 +63,7 @@ function listPatient() {
 	  	}
 	}`;
 
-	fetch('http://localhost:3000/graphql', {
+	fetch(address + ':3000/graphql', {
   		method: 'POST',
 	  	headers: {
 	    	'Content-Type': 'application/json',
@@ -88,7 +90,7 @@ function listPatient() {
 			else if(data.data.consults[i].status == "waitmed") {
 				action = "<button class='btn btn-success' name='"+patient_name+"' onclick='medEnd(this.name);'>Finish</button>";
 			}
-			$.get('http://localhost:3001/check-session', {}, function(data2) {
+			$.get(address + ':3001/check-session', {}, function(data2) {
 				if(data.data.consults[i].status != "finished") {
 					if(doctor_name == data2.fullname) {
 						count++;
@@ -125,14 +127,14 @@ function consultStart(name) {
 
 	let consult_date = date + " " + month + " " + year + " @ " + hour + ":" + minute + ":" + second;
 
-	$.get('http://localhost:3000/update-status-consult', {patient_name: name, status: status, prevStatus: prevStatus}, function(data) {
+	$.get(address + ':3000/update-status-consult', {patient_name: name, status: status, prevStatus: prevStatus}, function(data) {
 		let query = `mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {
 		  	updateConsult(patient_name: $patientName, input: $input) {
 		    	patient_name
 	  		}
 		}`;
 
-		fetch('http://localhost:3000/graphql', {
+		fetch(address + ':3000/graphql', {
 	  		method: 'POST',
 		  	headers: {
 		    	'Content-Type': 'application/json',
@@ -150,14 +152,14 @@ function consultStart(name) {
 		}).then(r => r.json()).then(function(data) {
 			console.log(data);
 		});
-		$.get('http://localhost:3000/add-consult-date', {patient_name: name, consult_date: consult_date, status: status}, function(data) {
+		$.get(address + ':3000/add-consult-date', {patient_name: name, consult_date: consult_date, status: status}, function(data) {
 			let query = `mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {
 			  	updateConsult(patient_name: $patientName, input: $input) {
 			    	patient_name
 		  		}
 			}`;
 
-			fetch('http://localhost:3000/graphql', {
+			fetch(address + ':3000/graphql', {
 		  		method: 'POST',
 			  	headers: {
 			    	'Content-Type': 'application/json',
@@ -177,7 +179,7 @@ function consultStart(name) {
 			});
 		});
 		alert("Update Consult Success");
-		window.location.replace("http://localhost:3001/consult/list-consult.html");
+		window.location.replace(address + ":3001/consult/list-consult.html");
 	});
 }
 //
@@ -187,14 +189,14 @@ function consultEnd(name) {
 	let patientName: string = name;
 	let prevStatus: string = "ongoing";
 	let status: string = "waitmed";
-	$.get('http://localhost:3000/update-status-consult', {patient_name: name, status: status, prevStatus: prevStatus}, function(data) {
+	$.get(address + ':3000/update-status-consult', {patient_name: name, status: status, prevStatus: prevStatus}, function(data) {
 		let query = `mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {
 		  	updateConsult(patient_name: $patientName, input: $input) {
 		    	patient_name
 	  		}
 		}`;
 
-		fetch('http://localhost:3000/graphql', {
+		fetch(address + ':3000/graphql', {
 	  		method: 'POST',
 		  	headers: {
 		    	'Content-Type': 'application/json',
@@ -213,7 +215,7 @@ function consultEnd(name) {
 			console.log(data);
 		});
 		alert("Update Consult Success");
-		window.location.replace("http://localhost:3001/consult/list-consult.html");
+		window.location.replace(address + ":3001/consult/list-consult.html");
 	});
 }
 //
@@ -223,14 +225,14 @@ function medEnd(name) {
 	let patientName: string = name;
 	let prevStatus: string = "waitmed";
 	let status: string = "finished";
-	$.get('http://localhost:3000/update-status-consult', {patient_name: name, status: status, prevStatus: prevStatus}, function(data) {
+	$.get(address + ':3000/update-status-consult', {patient_name: name, status: status, prevStatus: prevStatus}, function(data) {
 		let query = `mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {
 		  	updateConsult(patient_name: $patientName, input: $input) {
 		    	patient_name
 	  		}
 		}`;
 
-		fetch('http://localhost:3000/graphql', {
+		fetch(address + ':3000/graphql', {
 	  		method: 'POST',
 		  	headers: {
 		    	'Content-Type': 'application/json',
@@ -249,7 +251,7 @@ function medEnd(name) {
 			console.log(data);
 		});
 		alert("Update Consult Success");
-		window.location.replace("http://localhost:3001/consult/list-consult.html");
+		window.location.replace(address + ":3001/consult/list-consult.html");
 	});
 }
 //
@@ -265,7 +267,7 @@ function listConsult() {
 	  	}
 	}`;
 
-	fetch('http://localhost:3000/graphql', {
+	fetch(address + ':3000/graphql', {
   		method: 'POST',
 	  	headers: {
 	    	'Content-Type': 'application/json',
@@ -319,7 +321,7 @@ function checkConsultDoctor(name) {
 	    }
 	}`;
 
-	fetch('http://localhost:3000/graphql', {
+	fetch(address + ':3000/graphql', {
   		method: 'POST',
 	  	headers: {
 	    	'Content-Type': 'application/json',
@@ -337,7 +339,7 @@ function checkConsultDoctor(name) {
 }
 
 function consultDoctor() {
-	$.get('http://localhost:3001/check-session', {}, function(data) {
+	$.get(address + ':3001/check-session', {}, function(data) {
 		let doctor_name = $('#consult-check').html() as string;
 		let patient_name = data.fullname;
 		let currentdate = new Date();
@@ -365,7 +367,7 @@ function consultDoctor() {
 		  	}
 		}`;
 
-		fetch('http://localhost:3000/graphql', {
+		fetch(address + ':3000/graphql', {
 	  		method: 'POST',
 		  	headers: {
 		    	'Content-Type': 'application/json',
@@ -382,14 +384,14 @@ function consultDoctor() {
 			if(data.data.consultPending == null) {
 				let status = "pending";
 				let consult_date = null;
-				$.get('http://localhost:3000/add-consult', {patient_name: patient_name, doctor_name: doctor_name, checkin_date: checkin_date, status: status}, function(data) {
+				$.get(address + ':3000/add-consult', {patient_name: patient_name, doctor_name: doctor_name, checkin_date: checkin_date, status: status}, function(data) {
 					let query = `mutation createConsult($input:ConsultInput) {
 					  	createConsult(input: $input) {
 					    	patient_name
 				  		}
 					}`;
 
-					fetch('http://localhost:3000/graphql', {
+					fetch(address + ':3000/graphql', {
 				  		method: 'POST',
 					  	headers: {
 					    	'Content-Type': 'application/json',
@@ -411,20 +413,20 @@ function consultDoctor() {
 						console.log(data);
 					});
 					alert("Add Consult Success");
-					window.location.replace("http://localhost:3001/consult/consult.html");
+					window.location.replace(address + ":3001/consult/consult.html");
 				});
 			}
 			else {
 				let medicine = data.data.consultPending.medicine;
 				let status = data.data.consultPending.status;
-				$.get('http://localhost:3000/update-specific-consult', {patient_name: patient_name, doctor_name: doctor_name, checkin_date: checkin_date, medicine: medicine, status: status}, function(data) {
+				$.get(address + ':3000/update-specific-consult', {patient_name: patient_name, doctor_name: doctor_name, checkin_date: checkin_date, medicine: medicine, status: status}, function(data) {
 					let query = `mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {
 					  	updateConsult(patient_name: $patientName, input: $input) {
 					    	patient_name
 				  		}
 					}`;
 
-					fetch('http://localhost:3000/graphql', {
+					fetch(address + ':3000/graphql', {
 				  		method: 'POST',
 					  	headers: {
 					    	'Content-Type': 'application/json',
@@ -447,7 +449,7 @@ function consultDoctor() {
 						console.log(data);
 					});
 					alert("Update Consult Success");
-					window.location.replace("http://localhost:3001/consult/consult.html");
+					window.location.replace(address + ":3001/consult/consult.html");
 				});
 			}
 		});

@@ -1,3 +1,5 @@
+let address = 'http://141.136.47.202';
+
 //menampilkan list post pada halaman blog.html
 function listBlog() {
 	var query = `query getAllBlog {
@@ -11,7 +13,7 @@ function listBlog() {
 	  }
 	}`;
 
-	fetch('http://localhost:3000/graphql', {
+	fetch(address + ':3000/graphql', {
   		method: 'POST',
 	  	headers: {
 	    	'Content-Type': 'application/json',
@@ -57,8 +59,8 @@ function addPost() {
 	let month = monthNames[(currentdate.getMonth())];
 	let year = currentdate.getFullYear();
 
-	$.get('http://localhost:3001/check-session', {}, function(data2) {	
-		$.get('http://localhost:3000/add-post', {title: title, content: content, date: date, month: month, year: year, author: data2.fullname}, function(data) {
+	$.get(address + ':3001/check-session', {}, function(data2) {	
+		$.get(address + ':3000/add-post', {title: title, content: content, date: date, month: month, year: year, author: data2.fullname}, function(data) {
 			if(data.ok == 1) {
 				let author = data2.fullname;
 				let query = `mutation createSingleBlog($input:BlogInput) {
@@ -67,7 +69,7 @@ function addPost() {
 				  }
 				}`;
 
-				fetch('http://localhost:3000/graphql', {
+				fetch(address + ':3000/graphql', {
 			  		method: 'POST',
 				  	headers: {
 				    	'Content-Type': 'application/json',
@@ -90,7 +92,7 @@ function addPost() {
 					console.log(data);
 				});
 				alert("Add Post Success");
-				window.location.replace("http://localhost:3001/blog/blog.html");
+				window.location.replace(address + ":3001/blog/blog.html");
 			}
 			else {
 				alert("Add Post Error");
@@ -102,7 +104,7 @@ function addPost() {
 
 //mengambil data post pada halaman blog untuk di update dan eksekusi update
 function formPost(name) {
-	window.location.replace("http://localhost:3001/blog/edit-post.html?title="+name);
+	window.location.replace(address + ":3001/blog/edit-post.html?title="+name);
 }
 
 function formPostValue() {
@@ -115,7 +117,7 @@ function formPostValue() {
 	  }
 	}`;
 
-	fetch('http://localhost:3000/graphql', {
+	fetch(address + ':3000/graphql', {
   		method: 'POST',
 	  	headers: {
 	    	'Content-Type': 'application/json',
@@ -143,7 +145,7 @@ function updatePost() {
 	let month = monthNames[(currentdate.getMonth())];
 	let year = currentdate.getFullYear();
 
-	$.get('http://localhost:3000/update-post', {old: oldTitle, title: title, content: content, date: date, month: month, year: year}, function(data) {
+	$.get(address + ':3000/update-post', {old: oldTitle, title: title, content: content, date: date, month: month, year: year}, function(data) {
 		if(data.ok == 1) {
 			let blogTitle = oldTitle;
 			let query = `mutation updateSingleBlog($blogTitle:String!, $input:BlogInput) {
@@ -152,7 +154,7 @@ function updatePost() {
 		  		}
 			}`;
 
-			fetch('http://localhost:3000/graphql', {
+			fetch(address + ':3000/graphql', {
 		  		method: 'POST',
 			  	headers: {
 			    	'Content-Type': 'application/json',
@@ -175,7 +177,7 @@ function updatePost() {
 				console.log(data);
 			});
 			alert("Update Post Success");
-			window.location.replace("http://localhost:3001/blog/blog.html");
+			window.location.replace(address + ":3001/blog/blog.html");
 		}
 		else {
 			alert("Update Post Error");
@@ -193,7 +195,7 @@ function checkDeletePost(name) {
 function deletePost() {
 	let title = $('#delete-check').html() as string;
 
-	$.get('http://localhost:3000/delete-post', {title: title}, function(data) {
+	$.get(address + ':3000/delete-post', {title: title}, function(data) {
 		if(data.ok == 1) {
 			let blogTitle = title;
 			let query = `mutation deleteSingleBlog($blogTitle:String!) {
@@ -202,7 +204,7 @@ function deletePost() {
 		  		}
 			}`;
 
-			fetch('http://localhost:3000/graphql', {
+			fetch(address + ':3000/graphql', {
 		  		method: 'POST',
 			  	headers: {
 			    	'Content-Type': 'application/json',
@@ -218,7 +220,7 @@ function deletePost() {
 				console.log(data);
 			});
 			alert("Delete Post Success");
-			window.location.replace("http://localhost:3001/blog/blog.html");
+			window.location.replace(address + ":3001/blog/blog.html");
 		}
 		else {
 			alert("Delete Post Error");

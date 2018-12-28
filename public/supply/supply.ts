@@ -1,3 +1,5 @@
+let address = 'http://141.136.47.202';
+
 //menampilkan list item pada halaman supply.html
 function listSupply() {
 	var query = `query getAllCommerce {
@@ -8,7 +10,7 @@ function listSupply() {
 	  }
 	}`;
 
-	fetch('http://localhost:3000/graphql', {
+	fetch(address + ':3000/graphql', {
   		method: 'POST',
 	  	headers: {
 	    	'Content-Type': 'application/json',
@@ -51,9 +53,9 @@ function addSupply(name) {
 
 	let supply_date = date + " " + month + " " + year + " @ " + hour + ":" + minute + ":" + second;
 
-	$.get('http://localhost:3001/check-session', {}, function(data2) {	
+	$.get(address + ':3001/check-session', {}, function(data2) {	
 		let supplier_name = data2.fullname;
-		$.get('http://localhost:3000/add-supply', {supplier_name: supplier_name, medicine: medicine, qty: qty, supply_date: supply_date}, function(data) {
+		$.get(address + ':3000/add-supply', {supplier_name: supplier_name, medicine: medicine, qty: qty, supply_date: supply_date}, function(data) {
 			if(data.ok == 1) {
 				let query = `mutation createSingleSupply($input:SupplyInput) {
 				  createSupply(input: $input) {
@@ -61,7 +63,7 @@ function addSupply(name) {
 				  }
 				}`;
 
-				fetch('http://localhost:3000/graphql', {
+				fetch(address + ':3000/graphql', {
 			  		method: 'POST',
 				  	headers: {
 				    	'Content-Type': 'application/json',
@@ -87,7 +89,7 @@ function addSupply(name) {
 					  	}
 					}`;
 
-					fetch('http://localhost:3000/graphql', {
+					fetch(address + ':3000/graphql', {
 				  		method: 'POST',
 					  	headers: {
 					    	'Content-Type': 'application/json',
@@ -103,7 +105,7 @@ function addSupply(name) {
 						console.log(data);
 						if(data.data.commerce.name) {
 							let totalQty = data.data.commerce.qty + qty;
-							$.get('http://localhost:3000/item-supplied', {medicine: medicine, qty: totalQty}, function(data) {
+							$.get(address + ':3000/item-supplied', {medicine: medicine, qty: totalQty}, function(data) {
 								if(data.ok == 1) {
 									let query = `mutation updateSingleItem($itemName:String!, $input:CommerceInput) {
 									  	updateCommerce(name: $itemName, input: $input) {
@@ -111,7 +113,7 @@ function addSupply(name) {
 								  		}
 									}`;
 
-									fetch('http://localhost:3000/graphql', {
+									fetch(address + ':3000/graphql', {
 								  		method: 'POST',
 									  	headers: {
 									    	'Content-Type': 'application/json',
@@ -129,7 +131,7 @@ function addSupply(name) {
 									}).then(r => r.json()).then(function(data) {
 										console.log(data);
 										alert("Update Supplied Item Success");
-										window.location.replace("http://localhost:3001/supply/supply.html");
+										window.location.replace(address + ":3001/supply/supply.html");
 									});
 								}
 								else {

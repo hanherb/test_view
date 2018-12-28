@@ -1,7 +1,8 @@
+var address = 'http://141.136.47.202';
 //menampilkan list item pada halaman supply.html
 function listSupply() {
     var query = "query getAllCommerce {\n\t  commerces {\n\t    name\n\t    qty\n\t    image\n\t  }\n\t}";
-    fetch('http://localhost:3000/graphql', {
+    fetch(address + ':3000/graphql', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -41,12 +42,12 @@ function addSupply(name) {
     var minute = currentdate.getMinutes();
     var hour = currentdate.getHours();
     var supply_date = date + " " + month + " " + year + " @ " + hour + ":" + minute + ":" + second;
-    $.get('http://localhost:3001/check-session', {}, function (data2) {
+    $.get(address + ':3001/check-session', {}, function (data2) {
         var supplier_name = data2.fullname;
-        $.get('http://localhost:3000/add-supply', { supplier_name: supplier_name, medicine: medicine, qty: qty, supply_date: supply_date }, function (data) {
+        $.get(address + ':3000/add-supply', { supplier_name: supplier_name, medicine: medicine, qty: qty, supply_date: supply_date }, function (data) {
             if (data.ok == 1) {
                 var query = "mutation createSingleSupply($input:SupplyInput) {\n\t\t\t\t  createSupply(input: $input) {\n\t\t\t\t    supplier_name\n\t\t\t\t  }\n\t\t\t\t}";
-                fetch('http://localhost:3000/graphql', {
+                fetch(address + ':3000/graphql', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -66,7 +67,7 @@ function addSupply(name) {
                 }).then(function (r) { return r.json(); }).then(function (data) {
                     console.log(data);
                     var query = "query getSingleCommerce($medicine: String!) {\n\t\t\t\t\t  \tcommerce(name: $medicine) {\n\t\t\t\t\t    \tname\n\t\t\t\t\t\t    qty\n\t\t\t\t\t  \t}\n\t\t\t\t\t}";
-                    fetch('http://localhost:3000/graphql', {
+                    fetch(address + ':3000/graphql', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -82,10 +83,10 @@ function addSupply(name) {
                         console.log(data);
                         if (data.data.commerce.name) {
                             var totalQty_1 = data.data.commerce.qty + qty;
-                            $.get('http://localhost:3000/item-supplied', { medicine: medicine, qty: totalQty_1 }, function (data) {
+                            $.get(address + ':3000/item-supplied', { medicine: medicine, qty: totalQty_1 }, function (data) {
                                 if (data.ok == 1) {
                                     var query_1 = "mutation updateSingleItem($itemName:String!, $input:CommerceInput) {\n\t\t\t\t\t\t\t\t\t  \tupdateCommerce(name: $itemName, input: $input) {\n\t\t\t\t\t\t\t\t\t    \tname\n\t\t\t\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t\t\t\t}";
-                                    fetch('http://localhost:3000/graphql', {
+                                    fetch(address + ':3000/graphql', {
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/json',
@@ -103,7 +104,7 @@ function addSupply(name) {
                                     }).then(function (r) { return r.json(); }).then(function (data) {
                                         console.log(data);
                                         alert("Update Supplied Item Success");
-                                        window.location.replace("http://localhost:3001/supply/supply.html");
+                                        window.location.replace(address + ":3001/supply/supply.html");
                                     });
                                 }
                                 else {

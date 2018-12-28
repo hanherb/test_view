@@ -1,7 +1,8 @@
+var address = 'http://141.136.47.202';
 //menampilkan list post pada halaman blog.html
 function listBlog() {
     var query = "query getAllBlog {\n\t  blogs {\n\t    title\n\t    content\n\t    date\n\t    month\n\t    year\n\t    author\n\t  }\n\t}";
-    fetch('http://localhost:3000/graphql', {
+    fetch(address + ':3000/graphql', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -45,12 +46,12 @@ function addPost() {
     ];
     var month = monthNames[(currentdate.getMonth())];
     var year = currentdate.getFullYear();
-    $.get('http://localhost:3001/check-session', {}, function (data2) {
-        $.get('http://localhost:3000/add-post', { title: title, content: content, date: date, month: month, year: year, author: data2.fullname }, function (data) {
+    $.get(address + ':3001/check-session', {}, function (data2) {
+        $.get(address + ':3000/add-post', { title: title, content: content, date: date, month: month, year: year, author: data2.fullname }, function (data) {
             if (data.ok == 1) {
                 var author = data2.fullname;
                 var query = "mutation createSingleBlog($input:BlogInput) {\n\t\t\t\t  createBlog(input: $input) {\n\t\t\t\t    title\n\t\t\t\t  }\n\t\t\t\t}";
-                fetch('http://localhost:3000/graphql', {
+                fetch(address + ':3000/graphql', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -73,7 +74,7 @@ function addPost() {
                     console.log(data);
                 });
                 alert("Add Post Success");
-                window.location.replace("http://localhost:3001/blog/blog.html");
+                window.location.replace(address + ":3001/blog/blog.html");
             }
             else {
                 alert("Add Post Error");
@@ -84,13 +85,13 @@ function addPost() {
 //--
 //mengambil data post pada halaman blog untuk di update dan eksekusi update
 function formPost(name) {
-    window.location.replace("http://localhost:3001/blog/edit-post.html?title=" + name);
+    window.location.replace(address + ":3001/blog/edit-post.html?title=" + name);
 }
 function formPostValue() {
     var title = window.location.href.split("?title=")[1].replace(/%20/g, " ");
     var blogTitle = title;
     var query = "query getSingleBlog($blogTitle: String!) {\n\t  blog(title: $blogTitle) {\n\t    title\n\t    content\n\t  }\n\t}";
-    fetch('http://localhost:3000/graphql', {
+    fetch(address + ':3000/graphql', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -116,11 +117,11 @@ function updatePost() {
     ];
     var month = monthNames[(currentdate.getMonth())];
     var year = currentdate.getFullYear();
-    $.get('http://localhost:3000/update-post', { old: oldTitle, title: title, content: content, date: date, month: month, year: year }, function (data) {
+    $.get(address + ':3000/update-post', { old: oldTitle, title: title, content: content, date: date, month: month, year: year }, function (data) {
         if (data.ok == 1) {
             var blogTitle = oldTitle;
             var query = "mutation updateSingleBlog($blogTitle:String!, $input:BlogInput) {\n\t\t\t  \tupdateBlog(title: $blogTitle, input: $input) {\n\t\t\t    \ttitle\n\t\t  \t\t}\n\t\t\t}";
-            fetch('http://localhost:3000/graphql', {
+            fetch(address + ':3000/graphql', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -143,7 +144,7 @@ function updatePost() {
                 console.log(data);
             });
             alert("Update Post Success");
-            window.location.replace("http://localhost:3001/blog/blog.html");
+            window.location.replace(address + ":3001/blog/blog.html");
         }
         else {
             alert("Update Post Error");
@@ -158,11 +159,11 @@ function checkDeletePost(name) {
 }
 function deletePost() {
     var title = $('#delete-check').html();
-    $.get('http://localhost:3000/delete-post', { title: title }, function (data) {
+    $.get(address + ':3000/delete-post', { title: title }, function (data) {
         if (data.ok == 1) {
             var blogTitle = title;
             var query = "mutation deleteSingleBlog($blogTitle:String!) {\n\t\t\t  \tdeleteBlog(title: $blogTitle) {\n\t\t\t    \ttitle\n\t\t  \t\t}\n\t\t\t}";
-            fetch('http://localhost:3000/graphql', {
+            fetch(address + ':3000/graphql', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -178,7 +179,7 @@ function deletePost() {
                 console.log(data);
             });
             alert("Delete Post Success");
-            window.location.replace("http://localhost:3001/blog/blog.html");
+            window.location.replace(address + ":3001/blog/blog.html");
         }
         else {
             alert("Delete Post Error");
