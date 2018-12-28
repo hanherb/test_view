@@ -2,7 +2,6 @@ var express = require('express');
 var app = express();
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
-var address = 'http://141.136.47.202';
 
 app.use(cookieParser());
 
@@ -10,14 +9,6 @@ app.use(session({
   secret: 'kuda',
   cookie: { secure: false }
 }))
-
-app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', address+ ':3000');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, navPlugin');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    next();
-});
 
 var server = app.listen(3001, function () {
 	var port = server.address().port;
