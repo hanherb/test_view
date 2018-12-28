@@ -9,7 +9,7 @@ $(function(){
 });
 
 function authCheck(type, callback) {
-	$.get(address + '/check-session', {}, function(data){
+	$.get(address + ':3001/check-session', {}, function(data){
 		if(data != 'no session') {
 			if(type == 'user') {
 				if(data.authority.api.user == 1) {
