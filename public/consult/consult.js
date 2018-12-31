@@ -1,4 +1,4 @@
-var address = 'http://141.136.47.202';
+var address = 'http://' + window.location.hostname;
 //menampilkan list doctor pada halaman consult.html
 function listDoctor() {
     var query = "query getAllUser {\n  \t\tusers {\n\t\t\tfullname\n\t    \temail\n\t    \trole\n\t    \tauthority {\n\t      \t\tuser {\n\t        \t\tread\n\t\t\t        create\n\t\t\t        update\n\t\t\t        delete\n\t      \t\t}\n\t\t    \tapi {\n\t\t        \tuser\n\t\t        \tplugin\n\t      \t\t}\n\t    \t}\n\t  \t}\n\t}";

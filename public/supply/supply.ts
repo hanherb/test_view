@@ -1,4 +1,4 @@
-let address = 'http://141.136.47.202';
+let address = 'http://' + window.location.hostname;
 
 //menampilkan list item pada halaman supply.html
 function listSupply() {

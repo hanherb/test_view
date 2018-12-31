@@ -1,4 +1,4 @@
-var address = 'http://141.136.47.202';
+var address = 'http://' + window.location.hostname;
 //menampilkan list post pada halaman blog.html
 function listBlog() {
     var query = "query getAllBlog {\n\t  blogs {\n\t    title\n\t    content\n\t    date\n\t    month\n\t    year\n\t    author\n\t  }\n\t}";

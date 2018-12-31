@@ -1,4 +1,4 @@
-var address = 'http://141.136.47.202';
+var address = 'http://' + window.location.hostname;
 //menampilkan list item pada halaman commerce.html
 function listCommerce() {
     var query = "query getAllCommerce {\n\t  commerces {\n\t    name\n\t    price\n\t    qty\n\t    description\n\t    user\n\t    image\n\t  }\n\t}";

@@ -1,4 +1,4 @@
-var address = 'http://141.136.47.202';
+var address = 'http://' + window.location.hostname;
 // let address = 'http://localhost';
 // if(navigator.serviceWorker) {
 //   	navigator.serviceWorker.register('/sw.js');

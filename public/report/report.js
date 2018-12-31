@@ -1,7 +1,111 @@
-var address = 'http://141.136.47.202';
-//menampilkan list item pada halaman commerce.html
+var address = 'http://' + window.location.hostname;
+//menampilkan list consult pada halaman report.html
+function listConsult() {
+    var query = "query getAllConsult {\n  \t\tconsults {\n\t\t\tdoctor_name\n\t    \tpatient_name\n\t    \tcheckin_date\n\t    \tconsult_date\n\t    \tstatus\n\t  \t}\n\t}";
+    fetch(address + ':3000/graphql', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            query: query,
+            variables: {}
+        })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+        for (var i = 0; i < data.data.consults.length; i++) {
+            var doctor_name = data.data.consults[i].doctor_name;
+            var patient_name = data.data.consults[i].patient_name;
+            var checkin_date = data.data.consults[i].checkin_date;
+            var consult_date = data.data.consults[i].consult_date;
+            var status_1 = data.data.consults[i].status;
+            if (doctor_name) {
+                $('#tableConsult tbody').append('<tr class="tr_data">' +
+                    '<td>' + (i + 1) + '</td>' +
+                    '<td>' + doctor_name + '</td>' +
+                    '<td>' + patient_name + '</td>' +
+                    '<td>' + checkin_date + '</td>' +
+                    '<td>' + consult_date + '</td>' +
+                    '<td>' + status_1 + '</td>' +
+                    '</tr>');
+            }
+        }
+        $('#tableConsult').after('<button class="btn btn-primary btn-print" name="consult" id="print-consult" onclick="startPrint(this.name)">Print</button>');
+    });
+}
+//--
+//mendapatkan data consult
+function getConsult(callback) {
+    var query = "query getAllConsult {\n  \t\tconsults {\n\t\t\tdoctor_name\n\t    \tpatient_name\n\t    \tcheckin_date\n\t    \tconsult_date\n\t    \tstatus\n\t  \t}\n\t}";
+    fetch(address + ':3000/graphql', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            query: query,
+            variables: {}
+        })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+        if (callback)
+            return callback(data.data.consults);
+    });
+}
+//--
+//menampilkan list transaction pada halaman report.html
+function listTransaction() {
+    var query = "query getAllTransaction {\n  \t\ttransactions {\n\t\t\tpatient_name\n\t  \t\tmedicine\n\t  \t\ttransaction_date\n\t  \t\tprice\n\t  \t}\n\t}";
+    fetch(address + ':3000/graphql', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            query: query,
+            variables: {}
+        })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+        for (var i = 0; i < data.data.transactions.length; i++) {
+            var patient_name = data.data.transactions[i].patient_name;
+            var medicine = data.data.transactions[i].medicine;
+            var transaction_date = data.data.transactions[i].transaction_date;
+            var price = data.data.transactions[i].price;
+            $('#tableTransaction tbody').append('<tr class="tr_data">' +
+                '<td>' + (i + 1) + '</td>' +
+                '<td>' + patient_name + '</td>' +
+                '<td>' + medicine + '</td>' +
+                '<td>' + price + '</td>' +
+                '<td>' + transaction_date + '</td>' +
+                '</tr>');
+        }
+        $('#tableTransaction').after('<button class="btn btn-primary btn-print" name="transaction" id="print-transaction" onclick="startPrint(this.name)">Print</button>');
+    });
+}
+//--
+//mendapatkan data transaction
+function getTransaction(callback) {
+    var query = "query getAllTransaction {\n  \t\ttransactions {\n\t\t\tpatient_name\n\t  \t\tmedicine\n\t  \t\ttransaction_date\n\t  \t\tprice\n\t  \t}\n\t}";
+    fetch(address + ':3000/graphql', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            query: query,
+            variables: {}
+        })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+        if (callback)
+            return callback(data.data.transactions);
+    });
+}
+//--
+//menampilkan list item pada halaman report.html
 function listCommerce() {
-    var query = "query getAllCommerce {\n\t  commerces {\n\t    name\n\t    price\n\t    qty\n\t    description\n\t    user\n\t    image\n\t  }\n\t}";
+    var query = "query getAllCommerce {\n  \t\tcommerces {\n\t\t\tname\n\t  \t\tqty\n\t  \t\tprice\n\t  \t}\n\t}";
     fetch(address + ':3000/graphql', {
         method: 'POST',
         headers: {
@@ -14,78 +118,23 @@ function listCommerce() {
         })
     }).then(function (r) { return r.json(); }).then(function (data) {
         for (var i = 0; i < data.data.commerces.length; i++) {
-            $('.container-item').append('<div class="col-md-3">' +
-                '<div class="item-detail">' +
-                '<a href="#"><img class="item-img" src="' + data.data.commerces[i].image + '" style="width: 150px; height: 150px;"></a>' +
-                '<div class="item-body">' +
-                '<div class="item-name"><a href="#">' + data.data.commerces[i].name + '</a></div>' +
-                '<ul class="item-text list-inline pr-2">' +
-                '<li class="list-inline-item"><span class="price">Rp ' + data.data.commerces[i].price + '</span></li>' +
-                '</ul>' +
-                '<div class="btn-group">' +
-                '<button class="btn btn-success" name="' + data.data.commerces[i].name + '" onclick="checkBuyItem(this.name);">Buy</button>' +
-                '<button class="btn btn-primary" name="' + data.data.commerces[i].name + '" onclick="formItem(this.name);">Edit</button>' +
-                '<button class="btn btn-danger" name="' + data.data.commerces[i].name + '" onclick="checkDeleteItem(this.name);">Delete</button>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '</div>');
+            var name_1 = data.data.commerces[i].name;
+            var qty = data.data.commerces[i].qty;
+            var price = data.data.commerces[i].price;
+            $('#tableCommerce tbody').append('<tr class="tr_data">' +
+                '<td>' + (i + 1) + '</td>' +
+                '<td>' + name_1 + '</td>' +
+                '<td>' + qty + '</td>' +
+                '<td>' + price + '</td>' +
+                '</tr>');
         }
+        $('#tableCommerce').after('<button class="btn btn-primary btn-print" name="commerce" id="print-commerce" onclick="startPrint(this.name)">Print</button>');
     });
 }
 //--
-//menambah item untuk plugin e-commerce
-function addItem() {
-    var name = $('#add-item-name').val();
-    var price = Number($('#add-item-price').val());
-    var qty = Number($('#add-item-qty').val());
-    var description = $('#add-item-description').val();
-    var image = $('#add-item-image').val();
-    $.get(address + ':3001/check-session', {}, function (data2) {
-        $.get(address + ':3000/add-item', { name: name, price: price, qty: qty, description: description, user: data2.fullname, image: image }, function (data) {
-            if (data.ok == 1) {
-                var user = data2.fullname;
-                var query = "mutation createSingleItem($input:CommerceInput) {\n\t\t\t\t  createCommerce(input: $input) {\n\t\t\t\t    name\n\t\t\t\t  }\n\t\t\t\t}";
-                fetch(address + ':3000/graphql', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        query: query,
-                        variables: {
-                            input: {
-                                name: name,
-                                price: price,
-                                qty: qty,
-                                description: description,
-                                user: user,
-                                image: image
-                            }
-                        }
-                    })
-                }).then(function (r) { return r.json(); }).then(function (data) {
-                    console.log(data);
-                });
-                alert("Add Item Success");
-                window.location.replace(address + ":3001/commerce/commerce.html");
-            }
-            else {
-                alert("Add Item Error");
-            }
-        });
-    });
-}
-//--
-//mengambil data item pada halaman commerce untuk di update dan eksekusi update
-function formItem(name) {
-    window.location.replace(address + ":3001/commerce/edit-item.html?name=" + name);
-}
-function formItemValue() {
-    var name = window.location.href.split("?name=")[1].replace(/%20/g, " ");
-    var itemName = name;
-    var query = "query getSingleItem($itemName: String!) {\n\t  commerce(name: $itemName) {\n\t    name\n\t    price\n\t    qty\n\t    description\n\t    image\n\t  }\n\t}";
+//mendapatkan data commerce
+function getCommerce(callback) {
+    var query = "query getAllCommerce {\n  \t\tcommerces {\n\t\t\tname\n\t  \t\tqty\n\t  \t\tprice\n\t  \t}\n\t}";
     fetch(address + ':3000/graphql', {
         method: 'POST',
         headers: {
@@ -94,102 +143,17 @@ function formItemValue() {
         },
         body: JSON.stringify({
             query: query,
-            variables: { itemName: itemName }
+            variables: {}
         })
     }).then(function (r) { return r.json(); }).then(function (data) {
-        console.log(data);
-        $('#update-item-name').val(data.data.commerce.name);
-        $('#update-item-price').val(data.data.commerce.price);
-        $('#update-item-qty').val(data.data.commerce.qty);
-        $('#update-item-description').val(data.data.commerce.description);
-        $('#update-item-image').val(data.data.commerce.image);
-    });
-}
-function updateItem() {
-    var oldName = window.location.href.split("?name=")[1].replace(/%20/g, " ");
-    var name = $('#update-item-name').val();
-    var price = Number($('#update-item-price').val());
-    var qty = Number($('#update-item-qty').val());
-    var description = $('#update-item-description').val();
-    var image = $('#update-item-image').val();
-    $.get(address + ':3000/update-item', { old: oldName, name: name, price: price, qty: qty, description: description, image: image }, function (data) {
-        if (data.ok == 1) {
-            var itemName = oldName;
-            var query = "mutation updateSingleItem($itemName:String!, $input:CommerceInput) {\n\t\t\t  \tupdateCommerce(name: $itemName, input: $input) {\n\t\t\t    \tname\n\t\t  \t\t}\n\t\t\t}";
-            fetch(address + ':3000/graphql', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    query: query,
-                    variables: {
-                        itemName: itemName,
-                        input: {
-                            name: name,
-                            price: price,
-                            qty: qty,
-                            description: description,
-                            image: image
-                        }
-                    }
-                })
-            }).then(function (r) { return r.json(); }).then(function (data) {
-                console.log(data);
-            });
-            alert("Update Item Success");
-            window.location.replace(address + ":3001/commerce/commerce.html");
-        }
-        else {
-            alert("Update Item Error");
-        }
+        if (callback)
+            return callback(data.data.commerces);
     });
 }
 //--
-//menghapus item dari halaman commerce
-function checkDeleteItem(name) {
-    $('#modalDeleteItem').modal('toggle');
-    $('#delete-check').html(name);
-}
-function deleteItem() {
-    var name = $('#delete-check').html();
-    $.get(address + ':3000/delete-item', { name: name }, function (data) {
-        if (data.ok == 1) {
-            var itemName = name;
-            var query = "mutation deleteSingleItem($itemName:String!) {\n\t\t\t  \tdeleteCommerce(name: $itemName) {\n\t\t\t    \tname\n\t\t  \t\t}\n\t\t\t}";
-            fetch(address + ':3000/graphql', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    query: query,
-                    variables: {
-                        itemName: itemName
-                    }
-                })
-            }).then(function (r) { return r.json(); }).then(function (data) {
-                console.log(data);
-            });
-            alert("Delete Item Success");
-            window.location.replace(address + ":3001/commerce/commerce.html");
-        }
-        else {
-            alert("Delete Item Error");
-        }
-    });
-}
-//--
-//melakukan pembelian item
-function checkBuyItem(name) {
-    $('#modalBuyItem').modal('toggle');
-    $('#buy-check').html(name);
-}
-function buyItem() {
-    var itemName = $('#buy-check').html();
-    var query = "query getSingleItem($itemName: String!) {\n\t  commerce(name: $itemName) {\n\t    name\n\t    price\n\t    qty\n\t    description\n\t    image\n\t  }\n\t}";
+//menampilkan list supply pada halaman report.html
+function listSupply() {
+    var query = "query getAllSupply {\n  \t\tsupplies {\n\t\t\tsupplier_name\n\t  \t\tmedicine\n\t  \t\tqty\n\t  \t\tsupply_date\n\t  \t}\n\t}";
     fetch(address + ':3000/graphql', {
         method: 'POST',
         headers: {
@@ -198,193 +162,115 @@ function buyItem() {
         },
         body: JSON.stringify({
             query: query,
-            variables: { itemName: itemName }
+            variables: {}
         })
     }).then(function (r) { return r.json(); }).then(function (data) {
-        var name = data.data.commerce.name;
-        var price = data.data.commerce.price;
-        var qty = data.data.commerce.qty - 1;
-        var description = data.data.commerce.description;
-        var image = data.data.commerce.image;
-        $.get(address + ':3001/check-session', {}, function (data) {
-            var patient_name = data.fullname;
-            var patientName = patient_name;
+        for (var i = 0; i < data.data.supplies.length; i++) {
+            var supplier_name = data.data.supplies[i].supplier_name;
+            var medicine = data.data.supplies[i].medicine;
+            var qty = data.data.supplies[i].qty;
+            var supply_date = data.data.supplies[i].supply_date;
+            $('#tableSupply tbody').append('<tr class="tr_data">' +
+                '<td>' + (i + 1) + '</td>' +
+                '<td>' + supplier_name + '</td>' +
+                '<td>' + medicine + '</td>' +
+                '<td>' + qty + '</td>' +
+                '<td>' + supply_date + '</td>' +
+                '</tr>');
+        }
+        $('#tableSupply').after('<button class="btn btn-primary btn-print" name="supply" id="print-supply" onclick="startPrint(this.name)">Print</button>');
+    });
+}
+//--
+//mendapatkan data supply
+function getSupply(callback) {
+    var query = "query getAllSupply {\n  \t\tsupplies {\n\t\t\tsupplier_name\n\t  \t\tmedicine\n\t  \t\tqty\n\t  \t\tsupply_date\n\t  \t}\n\t}";
+    fetch(address + ':3000/graphql', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            query: query,
+            variables: {}
+        })
+    }).then(function (r) { return r.json(); }).then(function (data) {
+        if (callback)
+            return callback(data.data.supplies);
+    });
+}
+//--
+//print kedalam format csv
+function startPrint(name) {
+    if (name == 'consult') {
+        getConsult(function (result) {
             setTimeout(function () {
-                $.get(address + ':3000/buy-item', { name: name, qty: qty }, function (data) {
-                    if (data.ok == 1) {
-                        var query_1 = "mutation updateSingleItem($itemName:String!, $input:CommerceInput) {\n\t\t\t\t\t\t  \tupdateCommerce(name: $itemName, input: $input) {\n\t\t\t\t\t\t    \tname\n\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\tquery getSingleConsult($patientName: String!) {\n\t\t\t\t\t  \t\tconsultMed(patient_name: $patientName) {\n\t\t\t\t\t\t\t\tdoctor_name\n\t\t\t\t\t\t    \tpatient_name\n\t\t\t\t\t\t    \tcheckin_date\n\t\t\t\t\t\t    \tmedicine\n\t\t\t\t\t\t    \tstatus\n\t\t\t\t\t\t  \t}\n\t\t\t\t\t\t}";
-                        fetch(address + ':3000/graphql', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                query: query_1,
-                                variables: {
-                                    itemName: itemName,
-                                    input: {
-                                        name: name,
-                                        price: price,
-                                        qty: qty,
-                                        description: description,
-                                        image: image
-                                    }
-                                },
-                                operationName: 'updateSingleItem'
-                            })
-                        }).then(function (r) { return r.json(); }).then(function (data) {
-                            console.log(data);
-                            var currentdate = new Date();
-                            var date = currentdate.getDate();
-                            var monthNames = ["January", "February", "March", "April", "May", "June",
-                                "July", "August", "September", "October", "November", "December"
-                            ];
-                            var month = monthNames[(currentdate.getMonth())];
-                            var year = currentdate.getFullYear();
-                            var second = currentdate.getSeconds();
-                            var minute = currentdate.getMinutes();
-                            var hour = currentdate.getHours();
-                            var transaction_date = date + " " + month + " " + year + " @ " + hour + ":" + minute + ":" + second;
-                            $.get(address + ':3000/add-transaction', { patient_name: patient_name, medicine: name, transaction_date: transaction_date, price: price }, function (data) {
-                                var query = "mutation createTransaction($input:TransactionInput) {\n\t\t\t\t\t\t\t\t  \tcreateTransaction(input: $input) {\n\t\t\t\t\t\t\t\t    \tpatient_name\n\t\t\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t\t\t}";
-                                fetch(address + ':3000/graphql', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'Accept': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                        query: query,
-                                        variables: {
-                                            input: {
-                                                patient_name: patient_name,
-                                                medicine: name,
-                                                transaction_date: transaction_date,
-                                                price: price
-                                            }
-                                        }
-                                    })
-                                }).then(function (r) { return r.json(); }).then(function (data) {
-                                    console.log(data);
-                                });
-                            });
-                        });
-                        fetch(address + ':3000/graphql', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                query: query_1,
-                                variables: {
-                                    patientName: patientName
-                                },
-                                operationName: 'getSingleConsult'
-                            })
-                        }).then(function (r) { return r.json(); }).then(function (data) {
-                            console.log(data);
-                            if (data.data.consultMed == null) {
-                                var medicine_1 = [];
-                                medicine_1.push(name);
-                                var status_1 = "pending";
-                                $.get(address + ':3000/add-consult', { patient_name: patient_name, medicine: medicine_1, status: status_1 }, function (data) {
-                                    var query = "mutation createConsult($input:ConsultInput) {\n\t\t\t\t\t\t\t\t\t  \tcreateConsult(input: $input) {\n\t\t\t\t\t\t\t\t\t    \tpatient_name\n\t\t\t\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t\t\t\t}";
-                                    fetch(address + ':3000/graphql', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'Accept': 'application/json'
-                                        },
-                                        body: JSON.stringify({
-                                            query: query,
-                                            variables: {
-                                                input: {
-                                                    patient_name: patient_name,
-                                                    medicine: medicine_1,
-                                                    status: status_1
-                                                }
-                                            }
-                                        })
-                                    }).then(function (r) { return r.json(); }).then(function (data) {
-                                        console.log(data);
-                                    });
-                                });
-                            }
-                            else {
-                                var medicine_2 = data.data.consultMed.medicine;
-                                var status_2 = data.data.consultMed.status;
-                                if (medicine_2) {
-                                    medicine_2.push(name);
-                                }
-                                else {
-                                    medicine_2 = [];
-                                    medicine_2.push(name);
-                                }
-                                var doctor_name_1 = data.data.consultMed.doctor_name;
-                                var checkin_date_1 = data.data.consultMed.checkin_date;
-                                $.get(address + ':3000/update-consult', { patient_name: patient_name, doctor_name: doctor_name_1, checkin_date: checkin_date_1, medicine: medicine_2, status: status_2 }, function (data) {
-                                    var query = "mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {\n\t\t\t\t\t\t\t\t\t  \tupdateConsult(patient_name: $patientName, input: $input) {\n\t\t\t\t\t\t\t\t\t    \tpatient_name\n\t\t\t\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t\t\t\t}";
-                                    fetch(address + ':3000/graphql', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'Accept': 'application/json'
-                                        },
-                                        body: JSON.stringify({
-                                            query: query,
-                                            variables: {
-                                                patientName: patientName,
-                                                input: {
-                                                    patient_name: patient_name,
-                                                    doctor_name: doctor_name_1,
-                                                    checkin_date: checkin_date_1,
-                                                    medicine: medicine_2,
-                                                    status: status_2
-                                                }
-                                            }
-                                        })
-                                    }).then(function (r) { return r.json(); }).then(function (data) {
-                                        console.log(data);
-                                        var patientName = patient_name;
-                                        console.log(patient_name);
-                                        var prevStatus = "waitmed";
-                                        var status = "finished";
-                                        $.get(address + ':3000/update-status-consult', { patient_name: patient_name, status: status, prevStatus: prevStatus }, function (data) {
-                                            var query = "mutation updateSingleConsult($patientName:String!, $input:ConsultInput) {\n\t\t\t\t\t\t\t\t\t\t\t  \tupdateConsult(patient_name: $patientName, input: $input) {\n\t\t\t\t\t\t\t\t\t\t\t    \tpatient_name\n\t\t\t\t\t\t\t\t\t\t  \t\t}\n\t\t\t\t\t\t\t\t\t\t\t}";
-                                            fetch(address + ':3000/graphql', {
-                                                method: 'POST',
-                                                headers: {
-                                                    'Content-Type': 'application/json',
-                                                    'Accept': 'application/json'
-                                                },
-                                                body: JSON.stringify({
-                                                    query: query,
-                                                    variables: {
-                                                        patientName: patientName,
-                                                        input: {
-                                                            status: status
-                                                        }
-                                                    }
-                                                })
-                                            }).then(function (r) { return r.json(); }).then(function (data) {
-                                                console.log(data);
-                                            });
-                                        });
-                                    });
-                                });
-                            }
-                        });
-                        alert("Buy Item Success");
-                        window.location.replace(address + ":3001/commerce/commerce.html");
-                    }
-                    else {
-                        alert("Buy Item Error");
-                    }
-                });
-            }, 50);
+                downloadCSV({ filename: "consult.csv", data: result });
+            }, 2000);
         });
+    }
+    else if (name == 'transaction') {
+        getTransaction(function (result) {
+            setTimeout(function () {
+                downloadCSV({ filename: "transaction.csv", data: result });
+            }, 2000);
+        });
+    }
+    else if (name == 'commerce') {
+        getCommerce(function (result) {
+            setTimeout(function () {
+                downloadCSV({ filename: "commerce.csv", data: result });
+            }, 2000);
+        });
+    }
+    else if (name == 'supply') {
+        getSupply(function (result) {
+            setTimeout(function () {
+                downloadCSV({ filename: "supply.csv", data: result });
+            }, 2000);
+        });
+    }
+}
+function convertArrayOfObjectsToCsv(args) {
+    var result, ctr, keys, columnDelimiter, lineDelimiter, data;
+    data = args.data || null;
+    if (data == null || !data.length) {
+        return null;
+    }
+    columnDelimiter = args.columnDelimiter || ',';
+    lineDelimiter = args.lineDelimiter || '\n';
+    keys = Object.keys(data[0]);
+    result = '';
+    result += keys.join(columnDelimiter);
+    result += lineDelimiter;
+    data.forEach(function (item) {
+        ctr = 0;
+        keys.forEach(function (key) {
+            if (ctr > 0)
+                result += columnDelimiter;
+            result += item[key];
+            ctr++;
+        });
+        result += lineDelimiter;
     });
+    return 'sep=,\r\n' + result;
+}
+function downloadCSV(args) {
+    var data, filename, link;
+    var csv = convertArrayOfObjectsToCsv({
+        data: args.data
+    });
+    if (csv == null)
+        return;
+    filename = args.filename || 'export.csv';
+    if (!csv.match(/^data:text\/csv/i)) {
+        csv = 'data:text/csv;charset=utf-8,' + csv;
+    }
+    data = encodeURI(csv);
+    link = document.createElement('a');
+    link.setAttribute('href', data);
+    link.setAttribute('download', filename);
+    link.click();
 }
 //--

@@ -21,21 +21,127 @@
 		  	</div>
 		</nav>
 		<div class="container-fluid">
-			
+			<div class="container">
+				<div class="button-toggle-show col-md-10 col-md-offset-4">
+					<button class="btn btn-primary" id="btn-show-consult">Consult</button>
+					<button class="btn btn-primary" id="btn-show-transaction">Transaction</button>
+					<button class="btn btn-primary" id="btn-show-commerce">Commerce</button>
+					<button class="btn btn-primary" id="btn-show-supply">Supply</button>
+				</div>
+				<div class="content-report">
+					<div class="row report-list hide" id="report-consult">
+			        	<div class="col-md-10 col-md-offset-1" id="consult-list">
+							<table class="table table-hover" id="tableConsult">
+					    		<thead>
+					      			<tr>
+					        			<th>No.</th>
+					        			<th>Doctor Name</th>
+					        			<th>Patient Name</th>
+					        			<th>Check-in Date</th>
+					        			<th>Consult Date</th>
+					        			<th>Status</th>
+					      			</tr>
+					    		</thead>
+					    		<tbody class="table-body">
+					    		</tbody>
+					  		</table>
+						</div>
+			      	</div>
+			      	<div class="row report-list hide" id="report-transaction">
+			        	<div class="col-md-10 col-md-offset-1" id="transaction-list">
+							<table class="table table-hover" id="tableTransaction">
+					    		<thead>
+					      			<tr>
+					        			<th>No.</th>
+					        			<th>Patient Name</th>
+					        			<th>Medicine</th>
+					        			<th>Price</th>
+					        			<th>Transaction Date</th>
+					      			</tr>
+					    		</thead>
+					    		<tbody class="table-body">
+					    		</tbody>
+					  		</table>
+						</div>
+			      	</div>
+			      	<div class="row report-list hide" id="report-commerce">
+			        	<div class="col-md-10 col-md-offset-1" id="commerce-list">
+							<table class="table table-hover" id="tableCommerce">
+					    		<thead>
+					      			<tr>
+					        			<th>No.</th>
+					        			<th>Item Name</th>
+					        			<th>Qty</th>
+					        			<th>Price</th>
+					      			</tr>
+					    		</thead>
+					    		<tbody class="table-body">
+					    		</tbody>
+					  		</table>
+						</div>
+			      	</div>
+			      	<div class="row report-list hide" id="report-supply">
+			        	<div class="col-md-10 col-md-offset-1" id="supply-list">
+							<table class="table table-hover" id="tableSupply">
+					    		<thead>
+					      			<tr>
+					        			<th>No.</th>
+					        			<th>Supplier Name</th>
+					        			<th>Medicine</th>
+					        			<th>Qty</th>
+					        			<th>Supply Date</th>
+					      			</tr>
+					    		</thead>
+					    		<tbody class="table-body">
+					    		</tbody>
+					  		</table>
+						</div>
+			      	</div> 
+				</div> 
+			</div>
 		</div>
 		<script type="text/javascript">
-			// $(document).ready(function() {
-			//     checkSession();
-			//     navPlugin();
-			//     authCheck('plugin', listCommerce());
-			// });
+			$(document).ready(function() {
+			    checkSession();
+			    navPlugin();
+			    authCheck('plugin', listConsult());
+			    authCheck('plugin', listTransaction());
+			    authCheck('plugin', listCommerce());
+			    authCheck('plugin', listSupply());
+			});
 
-			// $('#btn-confirm-delete').click(function() {
-			// 	deleteItem();
-			// });
-			// $('#btn-confirm-buy').click(function() {
-			// 	buyItem();
-			// });
+			$('#btn-show-consult').click(function() {
+				if($('#report-consult').hasClass('hide')) {
+					$('#report-consult').removeClass('hide').addClass('show');
+				}
+				else if($('#report-consult').hasClass('show')) {
+					$('#report-consult').removeClass('show').addClass('hide');
+				}
+			});
+			$('#btn-show-transaction').click(function() {
+				if($('#report-transaction').hasClass('hide')) {
+					$('#report-transaction').removeClass('hide').addClass('show');
+				}
+				else if($('#report-transaction').hasClass('show')) {
+					$('#report-transaction').removeClass('show').addClass('hide');
+				}
+			});
+			$('#btn-show-commerce').click(function() {
+				if($('#report-commerce').hasClass('hide')) {
+					$('#report-commerce').removeClass('hide').addClass('show');
+				}
+				else if($('#report-commerce').hasClass('show')) {
+					$('#report-commerce').removeClass('show').addClass('hide');
+				}
+			});
+			$('#btn-show-supply').click(function() {
+				if($('#report-supply').hasClass('hide')) {
+					$('#report-supply').removeClass('hide').addClass('show');
+				}
+				else if($('#report-supply').hasClass('show')) {
+					$('#report-supply').removeClass('show').addClass('hide');
+				}
+			});
 		</script>
 	</body>
 </html>

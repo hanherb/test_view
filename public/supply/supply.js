@@ -1,4 +1,4 @@
-var address = 'http://141.136.47.202';
+var address = 'http://' + window.location.hostname;
 //menampilkan list item pada halaman supply.html
 function listSupply() {
     var query = "query getAllCommerce {\n\t  commerces {\n\t    name\n\t    qty\n\t    image\n\t  }\n\t}";
