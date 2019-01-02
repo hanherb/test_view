@@ -1,7 +1,7 @@
 var address = 'http://' + window.location.hostname;
 //menampilkan list doctor pada halaman consult.html
 function listDoctor() {
-    var query = "query getAllUser {\n  \t\tusers {\n\t\t\tfullname\n\t    \temail\n\t    \trole\n\t    \tauthority {\n\t      \t\tuser {\n\t        \t\tread\n\t\t\t        create\n\t\t\t        update\n\t\t\t        delete\n\t      \t\t}\n\t\t    \tapi {\n\t\t        \tuser\n\t\t        \tplugin\n\t      \t\t}\n\t    \t}\n\t  \t}\n\t}";
+    var query = "query getAllUser {\n  \t\tusers {\n\t\t\tfullname\n\t    \temail\n\t    \trole\n\t    \tauthority {\n\t      \t\tuser {\n\t        \t\tread\n\t\t\t        create\n\t\t\t        update\n\t\t\t        delete\n\t      \t\t}\n\t\t    \tapi {\n\t\t        \tuser\n\t\t            blog\n\t\t            commerce\n\t\t            consult\n\t\t            supply\n\t\t            report\n\t      \t\t}\n\t    \t}\n\t  \t}\n\t}";
     fetch(address + ':3000/graphql', {
         method: 'POST',
         headers: {
@@ -240,7 +240,7 @@ function listConsult() {
 function checkConsultDoctor(name) {
     $('#modalConsult').modal('toggle');
     var userEmail = name;
-    var query = "query getSingleUser($userEmail: String!) {\n\t    user(email: $userEmail) {\n    \t\tfullname\n\t        email\n\t        role\n\t    \t\tauthority {\n\t          user {\n\t            read\n\t            create\n\t            update\n\t            delete\n\t          }\n\t        \tapi {\n\t            user\n\t            plugin\n\t          }\n\t        }\n\t    }\n\t}";
+    var query = "query getSingleUser($userEmail: String!) {\n\t    user(email: $userEmail) {\n    \t\tfullname\n\t        email\n\t        role\n\t    \t\tauthority {\n\t          user {\n\t            read\n\t            create\n\t            update\n\t            delete\n\t          }\n\t        \tapi {\n\t            user\n\t            blog\n\t            commerce\n\t            consult\n\t            supply\n\t            report\n\t          }\n\t        }\n\t    }\n\t}";
     fetch(address + ':3000/graphql', {
         method: 'POST',
         headers: {

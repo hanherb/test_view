@@ -94,14 +94,11 @@
 								      	<label><input type="checkbox" id="cb-delete">Delete</label>
 								    </div>
 								</div>
-								<div class="cb-container">
+								<div class="cb-container apply-plugin-1">
 									<label>API Access: </label>
 							    	<div class="checkbox cb1">
 								      	<label><input type="checkbox" id="cb-user">User</label>
-								    </div>
-								    <div class="checkbox cb1">
-							      		<label><input type="checkbox" id="cb-plugin">Plugin</label>
-								    </div>
+									</div>
 								</div>
 						  	</div>
 						  	<div class="row">
@@ -156,8 +153,9 @@
 						    	<select class="form-control" id="update-role">
 								    <option disabled selected>Choose Role..</option>
 								    <option value="user">User</option>
-								    <option value="admin">Admin</option>
 								    <option value="doctor">Doctor</option>
+								    <option value="supplier">Supplier</option>
+								    <option value="admin">Admin</option>
 							  	</select>
 						  	</div>
 						  	<div class="row">
@@ -179,14 +177,11 @@
 								      	<label><input type="checkbox" id="cb-delete">Delete</label>
 								    </div>
 								</div>
-								<div class="cb-container">
+								<div class="cb-container apply-plugin-2">
 									<label>API Access: </label>
-							    	<div class="checkbox cb2">
+							   		<div class="checkbox cb2">
 								      	<label><input type="checkbox" id="cb-user">User</label>
-								    </div>
-								    <div class="checkbox cb2">
-							      		<label><input type="checkbox" id="cb-plugin">Plugin</label>
-								    </div>
+									</div>
 								</div>
 						  	</div>
 						  	<div class="row">
@@ -225,6 +220,7 @@
 		<script type="text/javascript">
 			$( document ).ready(function() {
 			    authCheck('user', getUser());
+			    pluginAtModal();
 			    checkSession();
 			    navPlugin();
 			});

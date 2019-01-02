@@ -5,8 +5,23 @@ let address = 'http://' + window.location.hostname;
 // }
 
 $(function(){
-	$(".nav").load("././navbar.html");
+	$(".nav").append('<li class="session"><a href="/dashboard.html">Dashboard</a></li>'+
+		'<li class="dropdown">'+
+			'<a class="dropdown-toggle session" data-toggle="dropdown" href="#">Plugins'+
+				'<span class="caret"></span>'+
+			'</a>'+
+			'<ul class="dropdown-menu plugin-nav">'+
+		  		'<li><a href="/add-plugin.html">Add Plugin</a></li>'+
+		  		'<li role="separator" class="divider"></li>'+
+			'</ul>'+
+		'</li>'+
+		'<li class="session" id="logout"><a href="'+address+':3000/logout">Logout</a></li>'
+	);
 });
+
+function ucFirst(string) {
+	return string.substring(0, 1).toUpperCase() + string.substring(1).toLowerCase();
+}
 
 function authCheck(type, callback) {
 	$.get(address + ':3001/check-session', {}, function(data){
@@ -21,8 +36,48 @@ function authCheck(type, callback) {
 					window.location.replace(address + ":3001/");
 				}
 			}
-			else if(type == 'plugin') {
-				if(data.authority.api.plugin == 1) {
+			else if(type == 'blog') {
+				if(data.authority.api.blog == 1) {
+					if(callback)
+						callback();
+				}
+				else {
+					alert("You don't have enough permission");
+					window.location.replace(address + ":3001/");
+				}
+			}
+			else if(type == 'commerce') {
+				if(data.authority.api.commerce == 1) {
+					if(callback)
+						callback();
+				}
+				else {
+					alert("You don't have enough permission");
+					window.location.replace(address + ":3001/");
+				}
+			}
+			else if(type == 'consult') {
+				if(data.authority.api.consult == 1) {
+					if(callback)
+						callback();
+				}
+				else {
+					alert("You don't have enough permission");
+					window.location.replace(address + ":3001/");
+				}
+			}
+			else if(type == 'supply') {
+				if(data.authority.api.supply == 1) {
+					if(callback)
+						callback();
+				}
+				else {
+					alert("You don't have enough permission");
+					window.location.replace(address + ":3001/");
+				}
+			}
+			else if(type == 'report') {
+				if(data.authority.api.report == 1) {
 					if(callback)
 						callback();
 				}
@@ -55,7 +110,11 @@ function getUser() {
 				      }
 				    	api {
 				        user
-				        plugin
+			            blog
+			            commerce
+			            consult
+			            supply
+			            report
 				      }
 				    }
 				  }
@@ -107,7 +166,11 @@ function registerUser() {
 		},
 		"api": {
 			"user": 0,
-			"plugin": 0
+			"blog": 0,
+			"commerce": 0,
+			"consult": 0,
+			"supply": 0,
+			"report": 0
 		}
 	};
 
@@ -201,6 +264,40 @@ function checkSession() {
 }
 //--
 
+//apply list plugin pada dashboard.html bagian add & update user modal
+function pluginAtModal() {
+	let query = `query getAllPlugin {
+	  plugins {
+	    name
+	    status
+	  }
+	}`;
+
+	fetch(address + ':3000/graphql', {
+  		method: 'POST',
+	  	headers: {
+	    	'Content-Type': 'application/json',
+	    	'Accept': 'application/json',
+	  	},
+	  	body: JSON.stringify({
+	    	query,
+	    	variables: {},
+	  	})
+	}).then(r => r.json()).then(function(data) {
+		console.log(data.data.plugins);
+		for(let i = 0; i < data.data.plugins.length; i++) {
+			let pluginName = data.data.plugins[i].name;
+			$('.apply-plugin-1').append('<div class="checkbox cb1">'+
+									      	'<label><input type="checkbox" id="cb-'+pluginName+'">'+ucFirst(pluginName)+'</label>'+
+									   ' </div>');
+			$('.apply-plugin-2').append('<div class="checkbox cb2">'+
+									      	'<label><input type="checkbox" id="cb-'+pluginName+'">'+ucFirst(pluginName)+'</label>'+
+									   ' </div>');
+		}
+	});
+}
+//--
+
 // setting CRUD user (trigger function ada di atribut onclick setiap button)
 function manageUser(action: string, email: string) {
 	$.get(address + ':3001/check-session', {}, function(data){
@@ -226,19 +323,23 @@ function manageUser(action: string, email: string) {
 				        email
 				        role
 				    		authority {
-				          user {
-				            read
-				            create
-				            update
-				            delete
-				          }
-				        	api {
-				            user
-				            plugin
-				          }
-				        }
-				    }
-				}`;
+			          			user {
+						            read
+						            create
+						            update
+						            delete
+					          	}
+			        			api {
+						            user
+						            blog
+						            commerce
+						            consult
+						            supply
+						            report
+				          		}
+				        	}
+				    	}
+					}`;
 
 				fetch(address + ':3000/graphql', {
 			  		method: 'POST',
@@ -264,8 +365,18 @@ function manageUser(action: string, email: string) {
 						$('.cb2 #cb-delete').prop('checked', true);
 					if(data.data.user.authority.api.user == 1)
 						$('.cb2 #cb-user').prop('checked', true);
-					if(data.data.user.authority.api.plugin == 1)
-						$('.cb2 #cb-plugin').prop('checked', true);
+					if(data.data.user.authority.api.blog == 1)
+						$('.cb2 #cb-blog').prop('checked', true);
+					if(data.data.user.authority.api.commerce == 1)
+						$('.cb2 #cb-commerce').prop('checked', true);
+					if(data.data.user.authority.api.commerce == 1)
+						$('.cb2 #cb-commerce').prop('checked', true);
+					if(data.data.user.authority.api.consult == 1)
+						$('.cb2 #cb-consult').prop('checked', true);
+					if(data.data.user.authority.api.supply == 1)
+						$('.cb2 #cb-supply').prop('checked', true);
+					if(data.data.user.authority.api.report == 1)
+						$('.cb2 #cb-report').prop('checked', true);
 				});
 			}
 			else {
@@ -282,19 +393,23 @@ function manageUser(action: string, email: string) {
 				        email
 				        role
 				    		authority {
-				          user {
-				            read
-				            create
-				            update
-				            delete
-				          }
-				        	api {
-				            user
-				            plugin
-				          }
-				        }
-				    }
-				}`;
+				          		user {
+						            read
+						            create
+						            update
+						            delete
+				          		}
+				        		api {
+				            		user
+						            blog
+						            commerce
+						            consult
+						            supply
+						            report
+				          		}
+				        	}
+				    	}
+					}`;
 
 				fetch(address + ':3000/graphql', {
 			  		method: 'POST',
@@ -330,7 +445,11 @@ function updateUser() {
 	let cbUpdate: number;
 	let cbDelete: number;
 	let cbUser: number;
-	let cbPlugin: number;
+	let cbBlog: number;
+	let cbCommerce: number;
+	let cbConsult: number;
+	let cbSupply: number;
+	let cbReport: number;
 
 	if($('.cb2 #cb-read').is(':checked')) 
 		cbRead = 1;
@@ -352,10 +471,26 @@ function updateUser() {
 		cbUser = 1;
 	else
 		cbUser = 0;
-	if($('.cb2 #cb-plugin').is(':checked')) 
-		cbPlugin = 1;
+	if($('.cb2 #cb-blog').is(':checked')) 
+		cbBlog = 1;
 	else
-		cbPlugin = 0;
+		cbBlog = 0;
+	if($('.cb2 #cb-commerce').is(':checked')) 
+		cbCommerce = 1;
+	else
+		cbCommerce = 0;
+	if($('.cb2 #cb-consult').is(':checked')) 
+		cbConsult = 1;
+	else
+		cbConsult = 0;
+	if($('.cb2 #cb-supply').is(':checked')) 
+		cbSupply = 1;
+	else
+		cbSupply = 0;
+	if($('.cb2 #cb-report').is(':checked')) 
+		cbReport = 1;
+	else
+		cbReport = 0;
 
 	let authority = {
 		user: {
@@ -366,7 +501,11 @@ function updateUser() {
 		},
 		api: {
 			user: cbUser,
-			plugin: cbPlugin		
+			blog: cbBlog,		
+			commerce: cbCommerce,		
+			consult: cbConsult,		
+			supply: cbSupply,		
+			report: cbReport		
 		}
 	}
 
@@ -427,7 +566,11 @@ function createUser() {
 	let cbUpdate: number;
 	let cbDelete: number;
 	let cbUser: number;
-	let cbPlugin: number;
+	let cbBlog: number;
+	let cbCommerce: number;
+	let cbConsult: number;
+	let cbSupply: number;
+	let cbReport: number;
 
 	if($('.cb1 #cb-read').is(':checked')) 
 		cbRead = 1;
@@ -449,10 +592,26 @@ function createUser() {
 		cbUser = 1;
 	else
 		cbUser = 0;
-	if($('.cb1 #cb-plugin').is(':checked')) 
-		cbPlugin = 1;
+	if($('.cb1 #cb-blog').is(':checked')) 
+		cbBlog = 1;
 	else
-		cbPlugin = 0;
+		cbBlog = 0;
+	if($('.cb1 #cb-commerce').is(':checked')) 
+		cbCommerce = 1;
+	else
+		cbCommerce = 0;
+	if($('.cb1 #cb-consult').is(':checked')) 
+		cbConsult = 1;
+	else
+		cbConsult = 0;
+	if($('.cb1 #cb-supply').is(':checked')) 
+		cbSupply = 1;
+	else
+		cbSupply = 0;
+	if($('.cb1 #cb-report').is(':checked')) 
+		cbReport = 1;
+	else
+		cbReport = 0;
 
 	let authority = {
 		user: {
@@ -463,7 +622,11 @@ function createUser() {
 		},
 		api: {
 			user: cbUser,
-			plugin: cbPlugin		
+			blog: cbBlog,		
+			commerce: cbCommerce,		
+			consult: cbConsult,		
+			supply: cbSupply,		
+			report: cbReport		
 		}
 	}
 
@@ -591,6 +754,13 @@ function navPlugin() {
 					else if(data.data.plugins[i].name == 'supply') {
 						$.get(address + ':3001/check-session', {}, function(data2) {
 							if(data2.role == 'supplier') {
+								$('.plugin-nav').append('<li><a href="/'+data.data.plugins[i].name+'/'+data.data.plugins[i].name+'.html">'+data.data.plugins[i].name+'</a></li>');
+							}
+						});
+					}
+					else if(data.data.plugins[i].name == 'report') {
+						$.get(address + ':3001/check-session', {}, function(data2) {
+							if(data2.role == 'admin') {
 								$('.plugin-nav').append('<li><a href="/'+data.data.plugins[i].name+'/'+data.data.plugins[i].name+'.html">'+data.data.plugins[i].name+'</a></li>');
 							}
 						});

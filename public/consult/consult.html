@@ -61,7 +61,7 @@
 			$(document).ready(function() {
 			    checkSession();
 			    navPlugin();
-			   	listDoctor();
+			   	authCheck('consult', listDoctor());
 			});
 
 			$('#btn-confirm-consult').click(function() {

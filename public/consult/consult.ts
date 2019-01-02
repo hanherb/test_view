@@ -16,7 +16,11 @@ function listDoctor() {
 	      		}
 		    	api {
 		        	user
-		        	plugin
+		            blog
+		            commerce
+		            consult
+		            supply
+		            report
 	      		}
 	    	}
 	  	}
@@ -315,7 +319,11 @@ function checkConsultDoctor(name) {
 	          }
 	        	api {
 	            user
-	            plugin
+	            blog
+	            commerce
+	            consult
+	            supply
+	            report
 	          }
 	        }
 	    }
